@@ -1,0 +1,67 @@
+# Backup Directory (local development artifacts)
+backup/
+
+# Virtual Environment (machine-specific)
+venv/
+env/
+.env
+
+# Python Cache Files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Linter Cache
+.ruff_cache/
+
+# Generated Analysis Files (can be recreated)
+*.csv
+*.json
+*.dot
+*.png
+*_analysis*
+*_report*
+
+# Development Reports
+*_REPORT.md
+CLEANUP_PLAN.md
+
+# Test Files (until proper test suite established)
+test_*.py
+tests/
+
+# Broken/Backup Files
+*.broken
+*.bak
+*_backup*
+
+# Build/Distribution
+build/
+dist/
+*.egg-info/
+
+# IDE Files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-*
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+
+# Temporary Files
+*.tmp
+*.temp
+.tmp/
+
+# Config Files (may contain sensitive info)
+.env.local
+config.local.*
