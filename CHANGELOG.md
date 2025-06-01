@@ -5,6 +5,20 @@ All notable changes to the Cascade Linter project will be documented in this fil
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Comprehensive CLI usage documentation (README.md)
+- Quick start guide (QUICK_START.md) for essential commands
+- Command reference tables for all CLI options
+- Performance optimization tips and common workflows
+- Configuration examples and troubleshooting guide
+- Package execution support via `__main__.py`
+
+### Fixed
+- Package can now be executed with `python -m cascade_linter`
+- All documented CLI commands verified as functional
+
 ## [1.1.0] - 2025-06-01
 
 ### Added
