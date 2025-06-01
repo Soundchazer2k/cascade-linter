@@ -65,3 +65,9 @@ logs/
 # Config Files (may contain sensitive info)
 .env.local
 config.local.*
+ 
+# Development Setup Scripts (not needed by users) 
+*_push*.bat 
+*_push*.sh 
+setup_*.bat 
+setup_*.sh 
