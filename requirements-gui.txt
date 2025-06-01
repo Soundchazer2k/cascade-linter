@@ -1,0 +1,10 @@
+# GUI-specific requirements 
+# PySide6 GUI Framework 
+PySide6>=6.5.0 
+ 
+# Icon and styling libraries 
+qtawesome>=1.2.0 
+qdarkstyle>=3.1.0 
+ 
+# Logging and rich output for GUI 
+structlog>=23.1.0 
