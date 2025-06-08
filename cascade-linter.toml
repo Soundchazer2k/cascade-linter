@@ -18,6 +18,15 @@ respect_gitignore = true
 # Maximum line length (affects multiple linters)
 max_line_length = 88
 
+# Exclude patterns (beyond .gitignore)
+exclude_patterns = [
+    "backup/",
+    "*.bak",
+    "*_backup*", 
+    "*.broken",
+    "test_*.py",  # Exclude test files that aren't in tests/ folder
+]
+
 [tool.cascade-linter.output]
 # Use simple text output (disable Rich tables/colors)
 simple_output = false

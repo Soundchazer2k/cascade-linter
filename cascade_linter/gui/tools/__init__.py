@@ -13,7 +13,7 @@ This package contains utility modules for the Cascade Linter GUI:
 
 __all__ = [
     "ConfigManager",
-    "ThemeLoader", 
+    "ThemeLoader",
     "BatchManager",
     "LogExporter",
     "AnimationRunner",

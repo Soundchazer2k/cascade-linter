@@ -1,0 +1,199 @@
+/* Dracula Theme for Cascade Linter GUI */
+
+QWidget {
+    background-color: #282a36;
+    color: #f8f8f2;
+    font-family: "Segoe UI", "Ubuntu", sans-serif;
+    font-size: 10pt;
+}
+
+QMainWindow {
+    background-color: #282a36;
+}
+
+/* Buttons */
+QPushButton {
+    background-color: #ff79c6;
+    color: #282a36;
+    border: 1px solid #6272a4;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-weight: bold;
+}
+
+QPushButton:hover {
+    background-color: #bd93f9;
+}
+
+QPushButton:pressed {
+    background-color: #50fa7b;
+}
+
+QPushButton:disabled {
+    background-color: #44475a;
+    color: #6272a4;
+}
+
+/* Dialog styling */
+QDialog {
+    background-color: #282a36;
+    color: #f8f8f2;
+}
+
+/* Tab widget */
+QTabWidget {
+    background-color: #282a36;
+}
+
+QTabWidget::pane {
+    border: 1px solid #6272a4;
+    background-color: #282a36;
+}
+
+QTabWidget::tab-bar {
+    alignment: left;
+}
+
+QTabBar::tab {
+    background-color: rgba(68, 71, 90, 0.8);
+    color: #f8f8f2;
+    padding: 8px 16px;
+    margin-right: 2px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border: 1px solid rgba(98, 114, 164, 0.5);
+}
+
+QTabBar::tab:selected {
+    background-color: #ff79c6;
+    color: #282a36;
+    border: 1px solid #bd93f9;
+}
+
+QTabBar::tab:hover {
+    background-color: rgba(189, 147, 249, 0.3);
+    color: #bd93f9;
+}
+
+/* Group boxes */
+QGroupBox {
+    color: #8be9fd;
+    font-weight: bold;
+    border: 1px solid #6272a4;
+    border-radius: 4px;
+    margin-top: 8px;
+    padding-top: 8px;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 8px;
+    padding: 0 8px;
+    background-color: #282a36;
+}
+
+/* Form controls */
+QCheckBox {
+    spacing: 6px;
+    color: #f8f8f2;
+}
+
+QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #6272a4;
+    border-radius: 3px;
+    background-color: #282a36;
+}
+
+QCheckBox::indicator:checked {
+    background-color: #50fa7b;
+    border-color: #8be9fd;
+}
+
+QSpinBox, QComboBox, QLineEdit {
+    background-color: #44475a;
+    color: #f8f8f2;
+    border: 1px solid #6272a4;
+    border-radius: 4px;
+    padding: 4px 8px;
+    selection-background-color: #bd93f9;
+}
+
+QSpinBox:focus, QComboBox:focus, QLineEdit:focus {
+    border-color: #8be9fd;
+}
+
+QComboBox::drop-down {
+    border: none;
+    background-color: #6272a4;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    width: 20px;
+}
+
+QComboBox::down-arrow {
+    image: url(assets/arrow-down-blue.svg);
+    width: 12px;
+    height: 8px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #282a36;
+    color: #f8f8f2;
+    border: 1px solid #6272a4;
+    selection-background-color: #ff79c6;
+    selection-color: #282a36;
+    outline: none;
+}
+
+/* SpinBox controls */
+QSpinBox::up-button, QSpinBox::down-button {
+    background-color: #6272a4;
+    border: none;
+    width: 16px;
+    border-radius: 2px;
+}
+
+QSpinBox::up-button:hover, QSpinBox::down-button:hover {
+    background-color: #bd93f9;
+}
+
+QSpinBox::up-arrow {
+    image: url(assets/arrow-up-blue.svg);
+    width: 10px;
+    height: 6px;
+}
+
+QSpinBox::down-arrow {
+    image: url(assets/arrow-down-blue.svg);
+    width: 10px;
+    height: 6px;
+}
+
+/* Labels */
+QLabel {
+    color: #f8f8f2;
+}
+
+/* Scrollbars */
+QScrollBar:vertical {
+    background: #44475a;
+    width: 12px;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:vertical {
+    background: #6272a4;
+    border-radius: 6px;
+    min-height: 20px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #bd93f9;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    background: none;
+    height: 0px;
+}

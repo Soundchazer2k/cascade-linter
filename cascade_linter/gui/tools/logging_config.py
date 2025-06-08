@@ -7,12 +7,12 @@ Provides RichSignalHandler for Qt signal-based log routing to GUI components.
 
 Usage:
     from cascade_linter.gui.tools.logging_config import RichSignalHandler, get_structlog_logger
-    
+
     # Set up logging
     rich_handler = RichSignalHandler()
     rich_handler.html_ready.connect(log_viewer.append_html)
     log = get_structlog_logger(rich_handler)
-    
+
     # Log structured events
     log.info("lint_stage_started", stage="Ruff", folder="/path/to/project")
 """
@@ -30,29 +30,30 @@ __all__ = ["get_structlog_logger", "RichSignalHandler"]
 class RichSignalHandler(QObject):
     """
     Routes Rich-rendered HTML log fragments into the GUI via a Qt signal.
-    
+
     Features:
     - Converts structlog events to styled HTML fragments
     - Uses cross-platform Unicode symbols (BMP range only)
     - Emits Qt signals for thread-safe GUI integration
     - Preserves Rich markup and styling
     """
-    
+
     html_ready = Signal(str)
 
     def __init__(self, parent: Optional[QObject] = None):
         super().__init__(parent)
-        
+
         # Create a Rich Console writing to an in-memory StringIO buffer
         self._console = Console(
-            file=io.StringIO(),   # in-memory buffer
-            markup=True,          # allow Rich markup (e.g., [bold red])
-            emoji=False,          # avoid high-codepoint emoji for Windows compatibility
-            highlight=False,      # no syntax highlighting needed here
+            file=io.StringIO(),  # in-memory buffer
+            markup=True,  # allow Rich markup (e.g., [bold red])
+            emoji=False,  # avoid high-codepoint emoji for Windows compatibility
+            highlight=False,  # no syntax highlighting needed here
             force_terminal=True,  # force ANSI output
+            record=True,  # enable export_html functionality
             width=80,
         )
-        
+
         # Initialize Unicode symbol support
         self._init_symbols()
 
@@ -61,29 +62,29 @@ class RichSignalHandler(QObject):
         try:
             # Test if we can use BMP Unicode symbols
             test_symbols = "✔ ⚠ ◉ ◦ ℹ ⏳ → ✖"
-            test_symbols.encode('utf-8')
-            
+            test_symbols.encode("utf-8")
+
             # Use Unicode symbols (Windows/Linux/macOS compatible)
             self.symbols = {
-                'success': "✔",     # U+2714 Heavy Check Mark
-                'error': "✖",       # U+2716 Heavy Multiplication X
-                'warning': "⚠",     # U+26A0 Warning Sign
-                'info': "ℹ",        # U+2139 Information Source
-                'running': "⏳",     # U+23F3 Hourglass with Flowing Sand
-                'arrow': "→",       # U+2192 Rightwards Arrow
-                'bullet': "•",      # U+2022 Bullet
+                "success": "✔",  # U+2714 Heavy Check Mark
+                "error": "✖",  # U+2716 Heavy Multiplication X
+                "warning": "⚠",  # U+26A0 Warning Sign
+                "info": "ℹ",  # U+2139 Information Source
+                "running": "⏳",  # U+23F3 Hourglass with Flowing Sand
+                "arrow": "→",  # U+2192 Rightwards Arrow
+                "bullet": "•",  # U+2022 Bullet
             }
-            
+
         except (UnicodeEncodeError, UnicodeDecodeError):
             # Fallback to ASCII for legacy systems
             self.symbols = {
-                'success': "+",
-                'error': "X", 
-                'warning': "!",
-                'info': "i",
-                'running': "~",
-                'arrow': "->",
-                'bullet': "*",
+                "success": "+",
+                "error": "X",
+                "warning": "!",
+                "info": "i",
+                "running": "~",
+                "arrow": "->",
+                "bullet": "*",
             }
 
     def emit(self, event_dict: Dict[str, Any]):
@@ -100,59 +101,65 @@ class RichSignalHandler(QObject):
         ts = event_dict.get("timestamp", "")
         level = event_dict.get("level", "").upper()
         event_name = event_dict.get("event", "")
-        
+
         # Get appropriate symbol and color for level
         level_symbol = self._get_level_symbol(level)
         level_color = self._get_level_color(level)
 
-        # Build a Rich-formatted string
+        # Build a Rich-formatted string with better contrast
         # Format: 2025-06-01 12:00:00 [✔ INFO] lint_stage_started stage=Ruff folder=/…
         name_stamp = (
             f"[bold {level_color}]{level_symbol} {level}[/] "
-            f"[dim cyan]{event_name}[/]"
+            f"[bright_cyan]{event_name}[/]"  # Brighter cyan for event names
         )
 
-        # Append other key=value pairs
+        # Append other key=value pairs with better contrast
         details = ""
         for key, val in event_dict.items():
             if key in ("timestamp", "level", "logger", "event"):
                 continue
-            details += f" [white]{key}[/]=[magenta]{escape(str(val))}[/]"
+            # Use brighter colors for better contrast
+            details += f" [bright_white]{key}[/]=[bright_cyan]{escape(str(val))}[/]"
 
-        # Print into the in-memory console buffer
-        self._console.print(f"{ts} {name_stamp}{details}")
+        # Print into the in-memory console buffer with improved timestamp visibility
+        self._console.print(f"[dim white]{ts}[/] {name_stamp}{details}")
 
         # Convert any ANSI styling in `buf` to inline-styled HTML
         html = self._console.export_html(
-            code_format="ansi",     # interpret ANSI sequences
-            inline_styles=True,     # use inline CSS styles
-            full=False,             # do not include <html><body> wrappers
+            inline_styles=True,  # use inline CSS styles
         )
-        
+
         # Emit the HTML snippet for the GUI to consume
         self.html_ready.emit(html)
+
+        # Clear the console record for next message
+        self._console.file.truncate(0)
+        self._console.file.seek(0)
+
+        # Return the event dict (required by structlog)
+        return event_dict
 
     def _get_level_symbol(self, level: str) -> str:
         """Get appropriate symbol for log level."""
         level_symbols = {
-            'DEBUG': self.symbols['info'],
-            'INFO': self.symbols['success'],
-            'WARNING': self.symbols['warning'],
-            'ERROR': self.symbols['error'],
-            'CRITICAL': self.symbols['error']
+            "DEBUG": self.symbols["info"],
+            "INFO": self.symbols["success"],
+            "WARNING": self.symbols["warning"],
+            "ERROR": self.symbols["error"],
+            "CRITICAL": self.symbols["error"],
         }
-        return level_symbols.get(level, self.symbols['bullet'])
+        return level_symbols.get(level, self.symbols["bullet"])
 
     def _get_level_color(self, level: str) -> str:
         """Get appropriate color for log level."""
         level_colors = {
-            'DEBUG': 'blue',
-            'INFO': 'green', 
-            'WARNING': 'yellow',
-            'ERROR': 'red',
-            'CRITICAL': 'bold red'
+            "DEBUG": "bright_blue",  # More visible blue
+            "INFO": "bright_green",  # Keep bright green
+            "WARNING": "bright_yellow",  # Brighter yellow
+            "ERROR": "bright_red",  # Keep bright red
+            "CRITICAL": "bold red",  # Keep bold red
         }
-        return level_colors.get(level, 'white')
+        return level_colors.get(level, "white")
 
 
 def get_structlog_logger(rich_handler: RichSignalHandler):
@@ -161,10 +168,10 @@ def get_structlog_logger(rich_handler: RichSignalHandler):
 
     Returns a BoundLogger instance. Calls to `log.info(...)` will eventually
     call rich_handler.emit(html_snippet).
-    
+
     Args:
         rich_handler: RichSignalHandler instance to route events to
-        
+
     Returns:
         structlog.BoundLogger: Configured logger instance
     """
@@ -172,6 +179,11 @@ def get_structlog_logger(rich_handler: RichSignalHandler):
 
     # Basic stdlib logging (optional, here for completeness)
     logging.basicConfig(level=logging.INFO)
+
+    # Create a custom processor that handles both logging and GUI emission
+    def rich_gui_processor(logger, name, event_dict):
+        rich_handler.emit(event_dict)
+        return event_dict  # Return the dict for any downstream processors
 
     structlog.configure(
         processors=[
@@ -181,8 +193,10 @@ def get_structlog_logger(rich_handler: RichSignalHandler):
             structlog.processors.StackInfoRenderer(),
             structlog.processors.format_exc_info,
             structlog.processors.UnicodeDecoder(),
-            # Final processor routes to our RichSignalHandler
-            lambda logger, name, event_dict: rich_handler.emit(event_dict)
+            # Custom processor that routes to our RichSignalHandler
+            rich_gui_processor,
+            # Standard JSON renderer as final processor
+            structlog.processors.JSONRenderer(),
         ],
         context_class=dict,
         logger_factory=structlog.stdlib.LoggerFactory(),
@@ -196,20 +210,23 @@ def get_structlog_logger(rich_handler: RichSignalHandler):
 # Convenience functions for common log patterns
 class LogPatterns:
     """Common logging patterns for the Cascade Linter."""
-    
+
     @staticmethod
     def log_stage_start(logger, stage: str, folder: str, files_count: int = 0):
         """Log the start of a linting stage."""
         logger.info(
-            "lint_stage_started",
-            stage=stage,
-            folder=folder,
-            files_count=files_count
+            "lint_stage_started", stage=stage, folder=folder, files_count=files_count
         )
-    
+
     @staticmethod
-    def log_stage_finish(logger, stage: str, folder: str, 
-                        issues: int, duration: float, success: bool = True):
+    def log_stage_finish(
+        logger,
+        stage: str,
+        folder: str,
+        issues: int,
+        duration: float,
+        success: bool = True,
+    ):
         """Log the completion of a linting stage."""
         level = "info" if success else "error"
         getattr(logger, level)(
@@ -218,12 +235,13 @@ class LogPatterns:
             folder=folder,
             issues=issues,
             duration=duration,
-            success=success
+            success=success,
         )
-    
+
     @staticmethod
-    def log_issue_found(logger, file_path: str, line: int, 
-                       severity: str, message: str, rule: str = ""):
+    def log_issue_found(
+        logger, file_path: str, line: int, severity: str, message: str, rule: str = ""
+    ):
         """Log a specific linting issue."""
         logger.warning(
             "lint_issue_found",
@@ -231,12 +249,18 @@ class LogPatterns:
             line=line,
             severity=severity,
             message=message,
-            rule=rule
+            rule=rule,
         )
-    
+
     @staticmethod
-    def log_session_summary(logger, total_files: int, total_issues: int,
-                           auto_fixed: int, duration: float, success: bool):
+    def log_session_summary(
+        logger,
+        total_files: int,
+        total_issues: int,
+        auto_fixed: int,
+        duration: float,
+        success: bool,
+    ):
         """Log overall session summary."""
         level = "info" if success else "error"
         getattr(logger, level)(
@@ -245,7 +269,7 @@ class LogPatterns:
             total_issues=total_issues,
             auto_fixed=auto_fixed,
             duration=duration,
-            success=success
+            success=success,
         )
 
 
@@ -254,55 +278,65 @@ if __name__ == "__main__":
     import sys
     from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QTextEdit
     from PySide6.QtCore import QTimer
-    
+
     app = QApplication(sys.argv)
-    
+
     # Create test window
     window = QWidget()
     window.setWindowTitle("Logging Config Test")
     window.resize(600, 400)
-    
+
     layout = QVBoxLayout(window)
-    
+
     # Create log viewer
     log_viewer = QTextEdit()
     log_viewer.setReadOnly(True)
     log_viewer.setAcceptRichText(True)
-    log_viewer.setStyleSheet("""
+    log_viewer.setStyleSheet(
+        """
         QTextEdit {
             background-color: #121212;
             color: #E0E0E0;
             font-family: 'Consolas', monospace;
             font-size: 10px;
         }
-    """)
+    """
+    )
     layout.addWidget(log_viewer)
-    
+
     # Set up logging
     rich_handler = RichSignalHandler()
     rich_handler.html_ready.connect(
-        lambda html: log_viewer.insertHtml(f'<div style="margin-bottom:4px;">{html}</div>')
+        lambda html: log_viewer.insertHtml(
+            f'<div style="margin-bottom:4px;">{html}</div>'
+        )
     )
     log = get_structlog_logger(rich_handler)
-    
+
     # Create timer for test log messages
     timer = QTimer()
-    timer.timeout.connect(lambda: log.info("test_message", counter=timer.property("counter") or 0))
-    timer.timeout.connect(lambda: timer.setProperty("counter", (timer.property("counter") or 0) + 1))
-    
+    timer.timeout.connect(
+        lambda: log.info("test_message", counter=timer.property("counter") or 0)
+    )
+    timer.timeout.connect(
+        lambda: timer.setProperty("counter", (timer.property("counter") or 0) + 1)
+    )
+
     # Test different log levels
     def test_logging():
         log.info("application_started", version="1.0.0")
         log.info("lint_stage_started", stage="Ruff", folder="/example/project")
-        log.warning("lint_issue_found", file="example.py", line=42, message="unused import")
+        log.warning(
+            "lint_issue_found", file="example.py", line=42, message="unused import"
+        )
         log.error("lint_stage_failed", stage="Pylint", error="Tool not found")
         log.info("session_completed", total_issues=15, duration=12.3)
-    
+
     # Start test
     QTimer.singleShot(500, test_logging)
-    
+
     window.show()
     print("Logging configuration test window opened")
     print("Check the text area for formatted log output")
-    
+
     sys.exit(app.exec())

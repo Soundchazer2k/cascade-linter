@@ -19,6 +19,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Package can now be executed with `python -m cascade_linter`
 - All documented CLI commands verified as functional
 
+## [1.1.1] - 2025-06-08
+
+### Fixed
+- **Auto Fix tab cache issue**: Fixed discrepancy between Run Analysis and Auto Fix tabs where Auto Fix was using stale session data
+- **GitIgnore support**: Implemented proper .gitignore exclusion support in core linting engine to respect backup/ and other excluded directories
+- **Accurate fix counting**: Auto Fix now shows actual fixes applied (before/after analysis) instead of estimated counts
+- **Safe auto-fixing**: Removed unsafe fixes from default auto-fix behavior - now only applies safe transformations unless explicitly enabled
+
+### Changed
+- **File exclusions**: Enhanced exclude patterns to properly exclude backup directories, temporary files, and development artifacts
+- **Auto Fix behavior**: Made auto-fixing conservative by default - only safe formatting and obvious fixes applied
+- **Fresh analysis**: Auto Fix tab now runs fresh analysis instead of relying on cached session data for accurate results
+
+### Removed
+- **Development files cleanup**: Removed setup-related .md files that were only needed for initial GitHub repository setup:
+  - `GITHUB_SETUP.md` - One-time repository setup instructions
+  - `BACKEND_INTEGRATION_COMPLETE.md` - Development milestone reports
+  - `COMPLETE_FIX_SUMMARY.md`, `UI_IMPROVEMENTS_SUMMARY.md` - Completion summaries
+  - `BEAUTIFUL_WIDGETS_INTEGRATION_PLAN.md`, `ENHANCED_WIDGETS_INTEGRATION_GUIDE.md` - Development planning docs
+  - Various temporary integration guides and setup documentation
+
+### Technical  
+- Enhanced .gitignore patterns to prevent future inclusion of development artifacts
+- Added `coding_instructions/` to .gitignore (internal development use only)
+- Improved Auto Fix reliability and accuracy with before/after issue counting
+- Fixed core-to-GUI integration issues with gitignore exclusion support
+
 ## [1.1.0] - 2025-06-01
 
 ### Added
@@ -79,7 +106,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version History Summary
 
-- **v1.1.0** (2025-06-01): Enhanced dependency analyzer with micro-improvements
+- **v1.1.1** (2025-06-08): Auto Fix improvements, gitignore support, development file cleanup
+- **v1.1.0** (2025-06-01): Enhanced dependency analyzer with micro-improvements  
 - **v1.0.0** (2025-06-01): Initial stable production release
 
 ## Migration Guide

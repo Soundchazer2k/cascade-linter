@@ -22,8 +22,8 @@ class CLIProgressCallback(LinterProgressCallback):
         # Initialize parent class with proper function references
         super().__init__(
             progress_func=self._progress_func,
-            stage_start_func=self._stage_start_func, 
-            stage_finish_func=self._stage_finish_func
+            stage_start_func=self._stage_start_func,
+            stage_finish_func=self._stage_finish_func,
         )
 
     def _progress_func(self, message: str):
@@ -40,7 +40,9 @@ class CLIProgressCallback(LinterProgressCallback):
         """Internal stage finish function"""
         if self.verbose:
             status = "PASS" if success else "FAIL"
-            print(f"{status} {stage_name} completed in {duration:.2f}s", file=sys.stderr)
+            print(
+                f"{status} {stage_name} completed in {duration:.2f}s", file=sys.stderr
+            )
 
 
 class CLIInterface:
@@ -54,35 +56,31 @@ class CLIInterface:
         """Load rule explanations for --explain feature"""
         return {
             # Ruff rules
-            'E302': 'Expected 2 blank lines, found 1. PEP8 requires two blank lines between top-level function/class definitions.',
-            'F401': 'Module imported but unused. Remove the import statement or use the imported module.',
-            'F841': 'Local variable assigned but never used. Either use the variable or remove the assignment.',
-            'E501': 'Line too long. Break the line into multiple lines or increase max-line-length setting.',
-            'W291': 'Trailing whitespace. Remove spaces/tabs at the end of the line.',
-            'I001': 'Import block is un-sorted or un-formatted. Use isort or Ruff to fix import order.',
-            
+            "E302": "Expected 2 blank lines, found 1. PEP8 requires two blank lines between top-level function/class definitions.",
+            "F401": "Module imported but unused. Remove the import statement or use the imported module.",
+            "F841": "Local variable assigned but never used. Either use the variable or remove the assignment.",
+            "E501": "Line too long. Break the line into multiple lines or increase max-line-length setting.",
+            "W291": "Trailing whitespace. Remove spaces/tabs at the end of the line.",
+            "I001": "Import block is un-sorted or un-formatted. Use isort or Ruff to fix import order.",
             # Flake8 rules
-            'E203': 'Whitespace before colon. Usually conflicts with Black formatter - consider ignoring.',
-            'W503': 'Line break before binary operator. Style preference - can be ignored if using Black.',
-            'E712': 'Comparison to True should be "if cond is True:" or "if cond:"',
-            'E711': 'Comparison to None should be "if cond is None:"',
-            
+            "E203": "Whitespace before colon. Usually conflicts with Black formatter - consider ignoring.",
+            "W503": "Line break before binary operator. Style preference - can be ignored if using Black.",
+            "E712": 'Comparison to True should be "if cond is True:" or "if cond:"',
+            "E711": 'Comparison to None should be "if cond is None:"',
             # Pylint rules
-            'C0114': 'Missing module docstring. Add a docstring at the top of the file.',
-            'C0115': 'Missing class docstring. Add a docstring after the class definition.',
-            'C0116': 'Missing function docstring. Add a docstring after the function definition.',
-            'R0903': 'Too few public methods. Consider if this class is necessary or combine with others.',
-            'W0613': 'Unused argument. Either use the argument, rename it with underscore prefix, or remove it.',
-            
+            "C0114": "Missing module docstring. Add a docstring at the top of the file.",
+            "C0115": "Missing class docstring. Add a docstring after the class definition.",
+            "C0116": "Missing function docstring. Add a docstring after the function definition.",
+            "R0903": "Too few public methods. Consider if this class is necessary or combine with others.",
+            "W0613": "Unused argument. Either use the argument, rename it with underscore prefix, or remove it.",
             # Bandit rules
-            'B101': 'Use of assert detected. Assert statements are removed in optimized mode.',
-            'B301': 'Pickle usage detected. Consider using safer serialization methods.',
-            'B601': 'Shell injection possible. Use subprocess with shell=False and list arguments.',
-            
+            "B101": "Use of assert detected. Assert statements are removed in optimized mode.",
+            "B301": "Pickle usage detected. Consider using safer serialization methods.",
+            "B601": "Shell injection possible. Use subprocess with shell=False and list arguments.",
             # MyPy rules
-            'attr-defined': 'Attribute not defined on type. Check spelling or add type annotations.',
-            'name-defined': 'Name not defined. Check for typos or missing imports.',
-            'return-value': 'Missing return statement. Function should return a value of the declared type.',
+            "attr-defined": "Attribute not defined on type. Check spelling or add type annotations.",
+            "name-defined": "Name not defined. Check for typos or missing imports.",
+            "return-value": "Missing return statement. Function should return a value of the declared type.",
         }
 
     def _create_parser(self) -> argparse.ArgumentParser:
@@ -141,7 +139,7 @@ Examples:
         )
         stage_group.add_argument(
             "--flake8-only",
-            action="store_true", 
+            action="store_true",
             help="Run only Flake8 (same as --stages flake8)",
         )
         stage_group.add_argument(
@@ -188,25 +186,26 @@ Examples:
 
         # Tier 1 enhancements - beginner-friendly features
         parser.add_argument(
-            "--interactive", "-i",
+            "--interactive",
+            "-i",
             action="store_true",
-            help="Interactive guided mode - prompts for options (beginner-friendly)"
+            help="Interactive guided mode - prompts for options (beginner-friendly)",
         )
         parser.add_argument(
             "--explain",
             type=str,
             metavar="CODE",
-            help="Explain a specific lint rule code (e.g. --explain E302)"
+            help="Explain a specific lint rule code (e.g. --explain E302)",
         )
         parser.add_argument(
             "--init-config",
             action="store_true",
-            help="Create a starter configuration file with commented defaults"
+            help="Create a starter configuration file with commented defaults",
         )
         parser.add_argument(
             "--ci-snippet",
             choices=["github", "gitlab", "vscode"],
-            help="Generate CI/editor integration snippet"
+            help="Generate CI/editor integration snippet",
         )
 
         return parser
@@ -218,13 +217,13 @@ Examples:
         # Handle Tier 1 features first (these exit early)
         if parsed_args.explain:
             return self._handle_explain_rule(parsed_args.explain)
-        
+
         if parsed_args.init_config:
             return self._handle_init_config()
-        
+
         if parsed_args.ci_snippet:
             return self._handle_ci_snippet(parsed_args.ci_snippet)
-        
+
         if parsed_args.interactive:
             return self._handle_interactive_mode()
 
@@ -234,33 +233,33 @@ Examples:
     def _handle_explain_rule(self, rule_code: str) -> int:
         """Handle --explain CODE feature"""
         rule_code = rule_code.upper()
-        
+
         if rule_code in self.rule_explanations:
             print(f"\nRule Explanation: {rule_code}")
             print("=" * 50)
             print(f"{self.rule_explanations[rule_code]}")
             print("\nQuick Fix Tips:")
-            
+
             # Add specific fix suggestions
-            if rule_code == 'E302':
+            if rule_code == "E302":
                 print("   - Add one extra blank line above function/class definitions")
                 print("   - Run 'cascade-linter --unsafe-fixes' to auto-fix")
-            elif rule_code == 'F401':
+            elif rule_code == "F401":
                 print("   - Remove unused import lines")
                 print("   - Run 'cascade-linter' to auto-fix")
-            elif rule_code.startswith('C011'):  # Pylint docstring rules
+            elif rule_code.startswith("C011"):  # Pylint docstring rules
                 print("   - Add triple-quoted docstring after definition")
-                print("   - Example: def func(): \"\"\"Brief description.\"\"\"")
+                print('   - Example: def func(): """Brief description."""')
             else:
                 print("   - Run 'cascade-linter --check-only' to see all occurrences")
                 print("   - Check your linter's documentation for detailed fixes")
-            
+
             print(f"\nMore info: Search '{rule_code} Python lint' for detailed guides")
             return 0
         else:
             print(f"Unknown rule code: {rule_code}")
             print("\nCommon rule codes:")
-            common_rules = ['E302', 'F401', 'F841', 'E501', 'C0114', 'B101']
+            common_rules = ["E302", "F401", "F841", "E501", "C0114", "B101"]
             for code in common_rules:
                 if code in self.rule_explanations:
                     print(f"   {code}: {self.rule_explanations[code][:50]}...")
@@ -269,14 +268,16 @@ Examples:
     def _handle_init_config(self) -> int:
         """Handle --init-config feature"""
         config_path = Path("cascade-linter.toml")
-        
+
         if config_path.exists():
-            response = input(f"WARNING: {config_path} already exists. Overwrite? (y/N): ")
-            if response.lower() != 'y':
+            response = input(
+                f"WARNING: {config_path} already exists. Overwrite? (y/N): "
+            )
+            if response.lower() != "y":
                 print("Configuration creation cancelled.")
                 return 1
 
-        config_template = '''# Cascade Linter Configuration
+        config_template = """# Cascade Linter Configuration
 # Generated by --init-config
 
 [tool.cascade-linter]
@@ -343,12 +344,12 @@ ignore_missing_imports = true
 # cascade-linter                     # Use config defaults
 # cascade-linter --config other.toml # Use different config
 # cascade-linter --ruff-only         # Override config, run only Ruff
-'''
+"""
 
         try:
-            with open(config_path, 'w', encoding='utf-8') as f:
+            with open(config_path, "w", encoding="utf-8") as f:
                 f.write(config_template)
-            
+
             print(f"SUCCESS: Created configuration file: {config_path}")
             print("\nNext steps:")
             print("   1. Edit the config file to customize your preferences")
@@ -357,7 +358,7 @@ ignore_missing_imports = true
             print(f"\nTip: Edit {config_path} to disable MyPy by default:")
             print('   default_stages = ["ruff", "flake8", "pylint", "bandit"]')
             return 0
-            
+
         except Exception as e:
             print(f"ERROR: Failed to create config: {e}")
             return 1
@@ -365,7 +366,7 @@ ignore_missing_imports = true
     def _handle_ci_snippet(self, platform: str) -> int:
         """Handle --ci-snippet PLATFORM feature"""
         if platform == "github":
-            snippet = '''# GitHub Actions workflow for Cascade Linter
+            snippet = """# GitHub Actions workflow for Cascade Linter
 # Save as: .github/workflows/lint.yml
 
 name: Code Quality Check
@@ -393,10 +394,10 @@ jobs:
       run: |
         cascade-linter --check-only --verbose
         # Or customize: cascade-linter src/ --stages ruff flake8
-'''
-        
+"""
+
         elif platform == "gitlab":
-            snippet = '''# GitLab CI configuration for Cascade Linter  
+            snippet = """# GitLab CI configuration for Cascade Linter  
 # Add to: .gitlab-ci.yml
 
 lint:
@@ -414,10 +415,10 @@ lint:
     - merge_requests
     - main
     - develop
-'''
-        
+"""
+
         elif platform == "vscode":
-            snippet = '''// VS Code settings for Cascade Linter integration
+            snippet = """// VS Code settings for Cascade Linter integration
 // Add to: .vscode/settings.json
 
 {
@@ -466,21 +467,25 @@ lint:
 // 1. Install Ruff extension: charliermarsh.ruff
 // 2. Run full linter: Ctrl+Shift+P -> "Tasks: Run Task" -> "Cascade Linter - Full"
 // 3. Or use terminal: cascade-linter
-'''
+"""
 
         print(f"\n{platform.title()} Integration Snippet")
         print("=" * 60)
         print(snippet)
         print("=" * 60)
-        print(f"\nCopy the above snippet to integrate Cascade Linter with {platform.title()}.")
-        
+        print(
+            f"\nCopy the above snippet to integrate Cascade Linter with {platform.title()}."
+        )
+
         if platform == "github":
-            print("Tip: Adjust the Python version and add your project's requirements.txt")
+            print(
+                "Tip: Adjust the Python version and add your project's requirements.txt"
+            )
         elif platform == "gitlab":
             print("Tip: Modify the 'only' section to match your branch strategy")
         elif platform == "vscode":
             print("Tip: Install the Ruff extension for the best integration experience")
-        
+
         return 0
 
     def _handle_interactive_mode(self) -> int:
@@ -488,14 +493,16 @@ lint:
         print("Welcome to Cascade Linter Interactive Mode!")
         print("=" * 50)
         print("This guided mode will help you set up your linting preferences.\n")
-        
+
         # Step 1: Choose directory
         print("Step 1: Select directory to lint")
         current_dir = os.getcwd()
         print(f"Current directory: {current_dir}")
-        
+
         while True:
-            path_input = input("Enter path to lint (press Enter for current directory): ").strip()
+            path_input = input(
+                "Enter path to lint (press Enter for current directory): "
+            ).strip()
             if not path_input:
                 target_path = "."
                 break
@@ -504,14 +511,14 @@ lint:
                 break
             else:
                 print(f"ERROR: Path '{path_input}' doesn't exist. Try again.")
-        
+
         # Step 2: Choose linting mode
-        print(f"\nStep 2: Choose linting mode")
+        print("\nStep 2: Choose linting mode")
         print("1. Quick Lint (Ruff only - fast, fixes most issues)")
         print("2. Standard Lint (Ruff + Flake8 - good balance)")
         print("3. Full Lint (All 5 stages - comprehensive)")
         print("4. Custom (choose specific stages)")
-        
+
         while True:
             mode_choice = input("Choose mode (1-4): ").strip()
             if mode_choice == "1":
@@ -531,15 +538,17 @@ lint:
                         "ruff": "Fast Python linter and formatter",
                         "flake8": "Style guide enforcement",
                         "pylint": "Deep code analysis",
-                        "bandit": "Security vulnerability scanner", 
-                        "mypy": "Static type checker"
+                        "bandit": "Security vulnerability scanner",
+                        "mypy": "Static type checker",
                     }
                     print(f"   {i}. {stage}: {descriptions[stage]}")
-                
+
                 stage_input = input("Enter stage numbers (e.g. 1,2,3): ").strip()
                 try:
                     indices = [int(x.strip()) - 1 for x in stage_input.split(",")]
-                    stages = [all_stages[i] for i in indices if 0 <= i < len(all_stages)]
+                    stages = [
+                        all_stages[i] for i in indices if 0 <= i < len(all_stages)
+                    ]
                     if stages:
                         break
                     else:
@@ -548,14 +557,14 @@ lint:
                     print("ERROR: Invalid input. Use numbers and commas (e.g. 1,2,3)")
             else:
                 print("ERROR: Please choose 1, 2, 3, or 4")
-        
+
         # Step 3: Auto-fix options
-        print(f"\nStep 3: Auto-fix settings")
+        print("\nStep 3: Auto-fix settings")
         print("Should Cascade Linter automatically fix issues where possible?")
         print("1. Yes, apply safe fixes (recommended)")
         print("2. Yes, apply all fixes including unsafe ones (more aggressive)")
         print("3. No, just check and report issues")
-        
+
         while True:
             fix_choice = input("Choose option (1-3): ").strip()
             if fix_choice == "1":
@@ -572,27 +581,29 @@ lint:
                 break
             else:
                 print("ERROR: Please choose 1, 2, or 3")
-        
+
         # Step 4: Verbose output
-        print(f"\nStep 4: Output preferences")
+        print("\nStep 4: Output preferences")
         verbose_input = input("Show detailed progress? (Y/n): ").strip().lower()
-        verbose = verbose_input != 'n'
-        
+        verbose = verbose_input != "n"
+
         # Step 5: Summary and confirmation
-        print(f"\nSummary of your choices:")
+        print("\nSummary of your choices:")
         print(f"   Path: {target_path}")
         print(f"   Stages: {', '.join(stages)}")
-        print(f"   Auto-fix: {'Check only' if check_only else 'Safe fixes' if not unsafe_fixes else 'All fixes (unsafe)'}")
+        print(
+            f"   Auto-fix: {'Check only' if check_only else 'Safe fixes' if not unsafe_fixes else 'All fixes (unsafe)'}"
+        )
         print(f"   Verbose: {'Yes' if verbose else 'No'}")
-        
+
         confirm = input("\nProceed with linting? (Y/n): ").strip().lower()
-        if confirm == 'n':
+        if confirm == "n":
             print("Linting cancelled.")
             return 0
-        
+
         # Build args and run linting
-        print(f"\nStarting linting with your preferences...")
-        
+        print("\nStarting linting with your preferences...")
+
         # Convert to parsed_args format
         class InteractiveArgs:
             def __init__(self):
@@ -612,7 +623,7 @@ lint:
                 self.pylint_only = False
                 self.bandit_only = False
                 self.mypy_only = False
-        
+
         interactive_args = InteractiveArgs()
         return self._run_linting(interactive_args)
 
@@ -625,7 +636,7 @@ lint:
         elif parsed_args.flake8_only:
             parsed_args.stages = ["flake8"]
         elif parsed_args.pylint_only:
-            parsed_args.stages = ["pylint"] 
+            parsed_args.stages = ["pylint"]
         elif parsed_args.bandit_only:
             parsed_args.stages = ["bandit"]
         elif parsed_args.mypy_only:
@@ -633,21 +644,24 @@ lint:
 
         # Convert stage strings to enums - FIXED mapping
         stage_mapping = {
-            'ruff': LinterStage.RUFF,
-            'flake8': LinterStage.FLAKE8, 
-            'pylint': LinterStage.PYLINT,
-            'bandit': LinterStage.BANDIT,
-            'mypy': LinterStage.MYPY
+            "ruff": LinterStage.RUFF,
+            "flake8": LinterStage.FLAKE8,
+            "pylint": LinterStage.PYLINT,
+            "bandit": LinterStage.BANDIT,
+            "mypy": LinterStage.MYPY,
         }
-        stages = [stage_mapping[stage] for stage in parsed_args.stages if stage in stage_mapping]
+        stages = [
+            stage_mapping[stage]
+            for stage in parsed_args.stages
+            if stage in stage_mapping
+        ]
 
         # Create progress callback
         progress_callback = CLIProgressCallback(verbose=parsed_args.verbose)
 
         # Create linter runner - FIXED: Only pass supported parameters
         runner = CodeQualityRunner(
-            debug=parsed_args.debug,
-            simple_output=parsed_args.simple_output
+            debug=parsed_args.debug, simple_output=parsed_args.simple_output
         )
 
         try:
@@ -659,10 +673,13 @@ lint:
                 unsafe_fixes=parsed_args.unsafe_fixes,
                 callback=progress_callback,
             )
-            
+
             # TODO: Implement gitignore filtering in core.py if needed
             if parsed_args.no_gitignore and parsed_args.debug:
-                print("DEBUG: --no-gitignore flag set but not yet implemented in core", file=sys.stderr)
+                print(
+                    "DEBUG: --no-gitignore flag set but not yet implemented in core",
+                    file=sys.stderr,
+                )
 
             # Display results
             self._display_results(session, runner, parsed_args)
@@ -679,32 +696,33 @@ lint:
             return 130  # Standard SIGINT exit code
         except FileNotFoundError as e:
             print(f"File not found: {e}", file=sys.stderr)
-            return 2    # File/directory not found
+            return 2  # File/directory not found
         except PermissionError as e:
             print(f"Permission denied: {e}", file=sys.stderr)
-            return 3    # Permission error
+            return 3  # Permission error
         except Exception as e:
             print(f"Unexpected error: {e}", file=sys.stderr)
             if parsed_args.debug:
                 import traceback
+
                 traceback.print_exc()
-            return 4    # Unexpected runtime error
-    
+            return 4  # Unexpected runtime error
+
     def _determine_exit_code(self, session, args) -> int:
         """Enhanced exit codes for better CI/CD integration"""
         if session.success:
-            return 0    # All clean
-        
+            return 0  # All clean
+
         # Check if any errors (vs just warnings)
         has_errors = any(
             any(issue.severity.weight >= 3 for issue in result.issues)
             for result in session.stage_results.values()
         )
-        
+
         if has_errors:
-            return 1    # Lint errors found (fail build)
+            return 1  # Lint errors found (fail build)
         else:
-            return 1    # Lint warnings found (still fail by default)
+            return 1  # Lint warnings found (still fail by default)
             # Note: Future enhancement could add --exit-code-severity flag
             # to treat warnings as non-failing (return 0)
 
@@ -734,7 +752,9 @@ lint:
 
             for stage, result in session.stage_results.items():
                 icon = stage_icons.get(stage, "🔧")
-                stage_name = f"{icon} {stage.command.upper()}"  # Use .command instead of .value
+                stage_name = (
+                    f"{icon} {stage.command.upper()}"  # Use .command instead of .value
+                )
 
                 if result.success:
                     status = "[green]PASSED[/green]"  # Removed emoji
@@ -751,7 +771,9 @@ lint:
             # Simple table for non-Rich output
             for stage, result in session.stage_results.items():
                 status = "PASSED" if result.success else "ISSUES FOUND"  # Removed emoji
-                runner.print(f"{stage.command.upper():12} {status}")  # Use .command instead of .value
+                runner.print(
+                    f"{stage.command.upper():12} {status}"
+                )  # Use .command instead of .value
 
         # Overall summary
         if session.success:  # Use .success instead of .overall_success
@@ -765,7 +787,9 @@ lint:
                     )
                 )
             else:
-                runner.print("\nALL STAGES PASSED! Your code is squeaky clean!")  # Removed emoji
+                runner.print(
+                    "\nALL STAGES PASSED! Your code is squeaky clean!"
+                )  # Removed emoji
         else:
             failed_stages = [
                 stage.command  # Use .command instead of .value
@@ -791,12 +815,18 @@ lint:
                     for stage, result in session.stage_results.items()  # Use stage_results instead of results
                     if not result.success
                 ):
-                    runner.print("   Consider --unsafe-fixes for stubborn issues")  # Removed emoji
+                    runner.print(
+                        "   Consider --unsafe-fixes for stubborn issues"
+                    )  # Removed emoji
 
-            runner.print("   Manual fixes may be needed for import/name errors")  # Removed emoji
+            runner.print(
+                "   Manual fixes may be needed for import/name errors"
+            )  # Removed emoji
 
         # Execution summary
-        runner.print(f"\nTotal execution time: {session.execution_time:.2f}s")  # Removed emoji
+        runner.print(
+            f"\nTotal execution time: {session.execution_time:.2f}s"
+        )  # Removed emoji
         if session.total_issues > 0:
             runner.print(f"Total issues found: {session.total_issues}")  # Removed emoji
 
@@ -806,7 +836,7 @@ lint:
             # Create a runner to generate the detailed report
             runner = CodeQualityRunner(debug=False, simple_output=True)
             log_content = runner.generate_detailed_report(session)
-            
+
             with open(log_path, "w", encoding="utf-8") as f:
                 f.write(log_content)
             print(f"Detailed log saved to: {log_path}")  # Removed emoji

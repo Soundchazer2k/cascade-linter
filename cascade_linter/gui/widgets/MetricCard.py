@@ -1,298 +1,284 @@
 # cascade_linter/gui/widgets/MetricCard.py
-"""
-MetricCard Widget for Cascade Linter GUI
-
-A modern card widget displaying metrics with icon, label, and value.
-Follows Nielsen's heuristics for clear information hierarchy and recognition.
-
-Usage:
-    from cascade_linter.gui.widgets.MetricCard import MetricCard
-    
-    card = MetricCard("Total Files", "fa5s.folder")
-    card.set_value(42)
-    card.set_subtitle("Python files")
-"""
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel
-from PySide6.QtCore import Qt, QPropertyAnimation, QEasingCurve, QRect
-from PySide6.QtGui import QPainter, QPen, QBrush, QColor, QFont
-from typing import Optional
+from PySide6.QtCore import Qt, QPropertyAnimation, QEasingCurve, Property
+from PySide6.QtGui import QPainter, QColor, QPen, QFont
 
 
 class MetricCard(QWidget):
     """
-    A card widget for displaying key metrics with visual hierarchy.
-    
+    A metric display card widget showing an icon, title, and numeric value.
+
     Features:
-    - Icon + title + value layout
-    - Rounded corners with subtle shadow
-    - Animated value changes
-    - Customizable colors for different metric types
-    - Responsive text sizing
+    - Clean card-like appearance with rounded corners
+    - Icon + title at top, large numeric value below
+    - Smooth animations when value changes
+    - Customizable colors and styling
+    - Follows Nielsen's heuristics for clear information display
     """
-    
-    def __init__(self, title: str, icon_name: str = "", parent: Optional[QWidget] = None):
+
+    def __init__(self, title="Metric", value=0, icon="📊", parent=None):
         super().__init__(parent)
-        
-        self.title = title
-        self.icon_name = icon_name
-        self.current_value = 0
-        self.target_value = 0
-        self.subtitle = ""
-        self.card_type = "default"  # default, success, warning, error
-        
-        self._init_ui()
-        self._setup_animations()
-        self._apply_styling()
-    
-    def _init_ui(self):
-        """Initialize the user interface layout."""
-        self.setFixedSize(180, 100)
-        self.setObjectName("MetricCard")
-        
-        # Main layout
+        self.setFixedSize(200, 100)
+
+        # Data
+        self._title = title
+        self._icon = icon
+        self._value = value
+        self._animated_value = float(value)
+
+        # Animation
+        self._animation = QPropertyAnimation(self, b"animatedValue")
+        self._animation.setDuration(300)
+        self._animation.setEasingCurve(QEasingCurve.Type.OutCubic)
+
+        # Setup UI
+        self.init_ui()
+        self.apply_styling()
+
+    def init_ui(self):
+        """Initialize the user interface"""
         layout = QVBoxLayout(self)
         layout.setContentsMargins(12, 8, 12, 8)
         layout.setSpacing(4)
-        
+
         # Top row: Icon + Title
         top_layout = QHBoxLayout()
-        top_layout.setContentsMargins(0, 0, 0, 0)
-        
-        # Icon (placeholder - we'll use text for now since QtAwesome requires setup)
-        self.icon_label = QLabel("📊")  # Default icon
-        self.icon_label.setFixedSize(20, 20)
+        top_layout.setSpacing(8)
+
+        # Icon label
+        self.icon_label = QLabel(self._icon)
         self.icon_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.icon_label.setObjectName("cardIcon")
+        self.icon_label.setFixedSize(24, 24)
+        self.icon_label.setStyleSheet(
+            """
+            QLabel {
+                font-size: 16pt;
+                background: none;
+                border: none;
+            }
+        """
+        )
         top_layout.addWidget(self.icon_label)
-        
-        # Title
-        self.title_label = QLabel(self.title)
-        self.title_label.setObjectName("cardTitle")
-        self.title_label.setWordWrap(True)
-        top_layout.addWidget(self.title_label, 1)
-        
+
+        # Title label
+        self.title_label = QLabel(self._title)
+        self.title_label.setAlignment(
+            Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter
+        )
+        self.title_label.setStyleSheet(
+            """
+            QLabel {
+                font-size: 11pt;
+                font-weight: bold;
+                background: none;
+                border: none;
+            }
+        """
+        )
+        top_layout.addWidget(self.title_label, stretch=1)
+
         layout.addLayout(top_layout)
-        
-        # Value (large, prominent)
-        self.value_label = QLabel("0")
-        self.value_label.setObjectName("cardValue")
-        self.value_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignBottom)
-        layout.addWidget(self.value_label, 1)
-        
-        # Subtitle (optional, smaller text)
-        self.subtitle_label = QLabel("")
-        self.subtitle_label.setObjectName("cardSubtitle")
-        self.subtitle_label.setVisible(False)
-        layout.addWidget(self.subtitle_label)
-    
-    def _setup_animations(self):
-        """Set up animations for value changes."""
-        # For now, we'll implement simple value updates
-        # Animation could be added later with QPropertyAnimation
-        pass
-    
-    def _apply_styling(self):
-        """Apply styling based on current theme and card type."""
-        # Base styling - this will be enhanced by QSS themes
-        self.setStyleSheet("""
+
+        # Value label (large number)
+        self.value_label = QLabel(str(self._value))
+        self.value_label.setObjectName("metricValue")
+        self.value_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.value_label.setStyleSheet(
+            """
+            QLabel#metricValue {
+                font-size: 24pt;
+                font-weight: bold;
+                background: none;
+                border: none;
+                margin-top: 4px;
+            }
+        """
+        )
+        layout.addWidget(self.value_label, stretch=1)
+
+    def apply_styling(self):
+        """Apply card-like styling that respects themes"""
+        self.setStyleSheet(
+            """
             MetricCard {
-                background-color: transparent;
-                border: 1px solid #555753;
+                border: 1px solid palette(mid);
                 border-radius: 8px;
-                padding: 4px;
+                background-color: palette(base);
             }
-            
             MetricCard:hover {
-                border-color: #357ABD;
+                border: 2px solid palette(highlight);
+                background-color: palette(alternate-base);
             }
-            
-            QLabel#cardIcon {
-                color: #357ABD;
-                font-size: 16px;
-            }
-            
-            QLabel#cardTitle {
-                color: #E0E0E0;
-                font-size: 11px;
-                font-weight: normal;
-            }
-            
-            QLabel#cardValue {
-                color: #FFFFFF;
-                font-size: 24px;
-                font-weight: bold;
-            }
-            
-            QLabel#cardSubtitle {
-                color: #AAAAAA;
-                font-size: 9px;
-            }
-        """)
-    
-    def set_value(self, value: int):
         """
-        Set the metric value with optional animation.
-        
-        Args:
-            value: New value to display
-        """
-        self.target_value = value
-        self.current_value = value  # For now, no animation
-        self.value_label.setText(str(value))
-        
-        # Update tooltip with additional context
-        self.setToolTip(f"{self.title}: {value}")
-    
-    def set_subtitle(self, subtitle: str):
-        """
-        Set optional subtitle text.
-        
-        Args:
-            subtitle: Subtitle text to display below value
-        """
-        self.subtitle = subtitle
-        self.subtitle_label.setText(subtitle)
-        self.subtitle_label.setVisible(bool(subtitle))
-    
-    def set_icon(self, icon_text: str):
-        """
-        Set the icon (using text/emoji for now).
-        
-        Args:
-            icon_text: Icon character or emoji to display
-        """
-        self.icon_label.setText(icon_text)
-    
-    def set_card_type(self, card_type: str):
-        """
-        Set the card type for different visual styling.
-        
-        Args:
-            card_type: Type of card - 'default', 'success', 'warning', 'error'
-        """
-        self.card_type = card_type
-        
-        # Update styling based on type
-        type_colors = {
-            "default": "#357ABD",
-            "success": "#50FA7B", 
-            "warning": "#F1FA8C",
-            "error": "#FF5555"
-        }
-        
-        color = type_colors.get(card_type, "#357ABD")
-        
-        # Update icon color
-        self.icon_label.setStyleSheet(f"color: {color}; font-size: 16px;")
-        
-        # Update border color on hover
-        self.setStyleSheet(f"""
-            MetricCard {{
-                background-color: transparent;
-                border: 1px solid #555753;
-                border-radius: 8px;
-                padding: 4px;
-            }}
-            
-            MetricCard:hover {{
-                border-color: {color};
-            }}
-            
-            QLabel#cardTitle {{
-                color: #E0E0E0;
-                font-size: 11px;
-                font-weight: normal;
-            }}
-            
-            QLabel#cardValue {{
-                color: #FFFFFF;
-                font-size: 24px;
-                font-weight: bold;
-            }}
-            
-            QLabel#cardSubtitle {{
-                color: #AAAAAA;
-                font-size: 9px;
-            }}
-        """)
-    
+        )
+
+    def set_loading_state(self, is_loading=True):
+        """Set the card to show loading state instead of static zeros"""
+        if is_loading:
+            self.value_label.setText("...")
+            self.value_label.setStyleSheet(
+                """
+                QLabel#metricValue {
+                    font-size: 18pt;
+                    font-weight: bold;
+                    background: none;
+                    border: none;
+                    margin-top: 4px;
+                    color: palette(mid);
+                }
+            """
+            )
+        else:
+            # Restore normal styling
+            self.value_label.setStyleSheet(
+                """
+                QLabel#metricValue {
+                    font-size: 24pt;
+                    font-weight: bold;
+                    background: none;
+                    border: none;
+                    margin-top: 4px;
+                }
+            """
+            )
+
+    def set_value(self, value):
+        """Set the metric value with smooth animation"""
+        if value == self._value:
+            return
+
+        old_value = self._value
+        self._value = value
+
+        # Animate value change
+        self._animation.setStartValue(float(old_value))
+        self._animation.setEndValue(float(value))
+        self._animation.start()
+
+    def get_value(self):
+        """Get the current metric value"""
+        return self._value
+
+    def set_title(self, title):
+        """Set the metric title"""
+        self._title = title
+        self.title_label.setText(title)
+
+    def get_title(self):
+        """Get the metric title"""
+        return self._title
+
+    def set_icon(self, icon):
+        """Set the metric icon"""
+        self._icon = icon
+        self.icon_label.setText(icon)
+
+    def get_icon(self):
+        """Get the metric icon"""
+        return self._icon
+
+    # Property for animation
+    @Property(float)
+    def animatedValue(self):
+        return self._animated_value
+
+    @animatedValue.setter
+    def animatedValue(self, value):
+        self._animated_value = value
+        # Update display with animated value
+        display_value = int(round(value))
+        self.value_label.setText(str(display_value))
+
     def paintEvent(self, event):
-        """Custom paint event for card background and shadow."""
+        """Custom paint event for additional visual effects"""
+        super().paintEvent(event)
+
+        # Optional: Add subtle glow effect when hovered
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        
-        # Get current background color from theme
-        bg_color = self.palette().color(self.palette().ColorRole.Window)
-        
-        # Draw subtle shadow (optional, for neumorphic effect)
-        shadow_color = QColor(0, 0, 0, 20)
-        shadow_rect = QRect(2, 2, self.width() - 2, self.height() - 2)
-        painter.setBrush(QBrush(shadow_color))
-        painter.setPen(Qt.PenStyle.NoPen)
-        painter.drawRoundedRect(shadow_rect, 8, 8)
-        
-        # Draw main card background
-        card_rect = QRect(0, 0, self.width() - 2, self.height() - 2)
-        painter.setBrush(QBrush(bg_color))
-        
-        # Border color based on hover state
-        border_color = QColor("#357ABD") if self.underMouse() else QColor("#555753")
-        painter.setPen(QPen(border_color, 1))
-        painter.drawRoundedRect(card_rect, 8, 8)
-        
-        super().paintEvent(event)
-    
-    def enterEvent(self, event):
-        """Handle mouse enter for hover effects."""
-        self.update()  # Trigger repaint for hover border
-        super().enterEvent(event)
-    
-    def leaveEvent(self, event):
-        """Handle mouse leave for hover effects."""
-        self.update()  # Trigger repaint to remove hover border
-        super().leaveEvent(event)
 
+        # Check if widget is under mouse
+        if self.underMouse():
+            # Draw subtle glow
+            glow_color = QColor(114, 159, 207, 30)  # Semi-transparent blue
+            pen = QPen(glow_color, 2)
+            painter.setPen(pen)
+            painter.drawRoundedRect(self.rect().adjusted(1, 1, -1, -1), 8, 8)
+
+    def enterEvent(self, event):
+        """Handle mouse enter for hover effects"""
+        super().enterEvent(event)
+        self.update()  # Trigger repaint for glow effect
+
+    def leaveEvent(self, event):
+        """Handle mouse leave for hover effects"""
+        super().leaveEvent(event)
+        self.update()  # Trigger repaint to remove glow
+
+    def sizeHint(self):
+        """Provide size hint for layout managers"""
+        from PySide6.QtCore import QSize
+
+        return QSize(200, 100)
+
+    def minimumSizeHint(self):
+        """Provide minimum size hint"""
+        from PySide6.QtCore import QSize
+
+        return QSize(150, 80)
+
+
+# --- DEMO/TEST CODE ---
 
 if __name__ == "__main__":
-    # Simple test of MetricCard
     import sys
     from PySide6.QtWidgets import QApplication, QHBoxLayout, QWidget
-    
+    from PySide6.QtCore import QTimer
+
     app = QApplication(sys.argv)
-    
-    # Test window with sample cards
+
+    # Create test window
     window = QWidget()
-    window.setWindowTitle("MetricCard Test")
-    window.resize(600, 150)
-    
+    window.setWindowTitle("MetricCard Demo")
+    window.resize(700, 150)
+    window.setStyleSheet(
+        """
+        QWidget {
+            background-color: #2e3436;
+            color: #eeeeec;
+        }
+    """
+    )
+
     layout = QHBoxLayout(window)
-    
-    # Create sample cards
+    layout.setSpacing(20)
+    layout.setContentsMargins(20, 20, 20, 20)
+
+    # Create test cards
     card1 = MetricCard("Total Files", "📁")
-    card1.set_value(112)
-    card1.set_subtitle("Python files")
-    
     card2 = MetricCard("Issues Found", "⚠️")
-    card2.set_value(42)
-    card2.set_card_type("warning")
-    
     card3 = MetricCard("Auto-Fixed", "🔧")
-    card3.set_value(8)
-    card3.set_card_type("success")
-    
+
     layout.addWidget(card1)
     layout.addWidget(card2)
     layout.addWidget(card3)
-    layout.addStretch()
-    
-    # Apply dark theme for testing
-    app.setStyleSheet("""
-        QWidget {
-            background-color: #121212;
-            color: #E0E0E0;
-        }
-    """)
-    
+
+    # Animate values for demo
+    def update_values():
+        import random
+
+        card1.set_value(random.randint(50, 200))
+        card2.set_value(random.randint(0, 50))
+        card3.set_value(random.randint(0, 20))
+
+    # Update every 2 seconds
+    timer = QTimer()
+    timer.timeout.connect(update_values)
+    timer.start(2000)
+
+    # Initial values
+    update_values()
+
     window.show()
     sys.exit(app.exec())

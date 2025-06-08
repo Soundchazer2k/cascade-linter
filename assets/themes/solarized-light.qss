@@ -1,0 +1,249 @@
+/* Solarized Light Theme for Cascade Linter GUI */
+
+QWidget {
+    background-color: #fdf6e3;
+    color: #073642;
+    font-family: "Segoe UI", "Ubuntu", sans-serif;
+    font-size: 10pt;
+}
+
+QMainWindow {
+    background-color: #fdf6e3;
+}
+
+/* Buttons */
+QPushButton {
+    background-color: #268bd2;
+    color: #fdf6e3;
+    border: 1px solid #2aa198;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-weight: bold;
+}
+
+QPushButton:hover {
+    background-color: #2aa198;
+}
+
+QPushButton:pressed {
+    background-color: #b58900;
+}
+
+QPushButton:disabled {
+    background-color: #eee8d5;
+    color: #657b83;
+    border: 1px solid #93a1a1;
+}
+
+/* Dialog styling */
+QDialog {
+    background-color: #fdf6e3;
+    color: #073642;
+}
+
+/* Tab widget */
+QTabWidget {
+    background-color: #fdf6e3;
+}
+
+QTabWidget::pane {
+    border: 1px solid #93a1a1;
+    background-color: #fdf6e3;
+}
+
+QTabWidget::tab-bar {
+    alignment: left;
+}
+
+QTabBar::tab {
+    background-color: #eee8d5;
+    color: #073642;
+    padding: 8px 16px;
+    margin-right: 2px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+QTabBar::tab:selected {
+    background-color: #268bd2;
+    color: #fdf6e3;
+}
+
+QTabBar::tab:hover {
+    background-color: #2aa198;
+    color: #fdf6e3;
+}
+
+/* Group boxes */
+QGroupBox {
+    color: #073642;
+    font-weight: bold;
+    border: 1px solid #93a1a1;
+    border-radius: 4px;
+    margin-top: 8px;
+    padding-top: 8px;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 8px;
+    padding: 0 8px;
+    background-color: #fdf6e3;
+    color: #073642;
+}
+
+/* Form controls */
+QCheckBox {
+    spacing: 6px;
+    color: #073642;
+}
+
+QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #93a1a1;
+    border-radius: 3px;
+    background-color: #eee8d5;
+}
+
+QCheckBox::indicator:checked {
+    background-color: #268bd2;
+    border-color: #2aa198;
+}
+
+QSpinBox, QComboBox, QLineEdit {
+    background-color: #eee8d5;
+    color: #073642;
+    border: 1px solid #93a1a1;
+    border-radius: 4px;
+    padding: 4px 8px;
+    selection-background-color: #268bd2;
+}
+
+QSpinBox:focus, QComboBox:focus, QLineEdit:focus {
+    border-color: #268bd2;
+}
+
+/* Progress bars for better visibility */
+QProgressBar {
+    background-color: #eee8d5;
+    border: 1px solid #657b83;
+    border-radius: 4px;
+    text-align: center;
+    color: #073642;
+    font-weight: bold;
+}
+
+QProgressBar::chunk {
+    background-color: #268bd2;
+    border-radius: 3px;
+}
+
+QComboBox::drop-down {
+    border: none;
+    background-color: #93a1a1;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    width: 20px;
+}
+
+QComboBox::down-arrow {
+    image: url(assets/arrow-down-blue.svg);
+    width: 12px;
+    height: 8px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #fdf6e3;
+    color: #657b83;
+    border: 1px solid #93a1a1;
+    selection-background-color: #268bd2;
+    selection-color: #fdf6e3;
+    outline: none;
+}
+
+/* SpinBox controls */
+QSpinBox::up-button, QSpinBox::down-button {
+    background-color: #93a1a1;
+    border: none;
+    width: 16px;
+    border-radius: 2px;
+}
+
+QSpinBox::up-button:hover, QSpinBox::down-button:hover {
+    background-color: #268bd2;
+}
+
+QSpinBox::up-arrow {
+    image: url(assets/arrow-up-blue.svg);
+    width: 10px;
+    height: 6px;
+}
+
+QSpinBox::down-arrow {
+    image: url(assets/arrow-down-blue.svg);
+    width: 10px;
+    height: 6px;
+}
+
+/* Labels */
+QLabel {
+    color: #073642;
+}
+
+QGroupBox QLabel {
+    color: #073642;
+}
+
+QLabel#shortcuts {
+    color: #073642;
+    background-color: rgba(238, 232, 213, 0.9);
+    padding: 12px;
+    border: 1px solid #93a1a1;
+    border-radius: 6px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 9pt;
+}
+
+/* MetricCard styling for high contrast */
+MetricCard {
+    background-color: #fdf6e3;
+    border: 2px solid #268bd2;
+    border-radius: 8px;
+}
+
+MetricCard:hover {
+    border: 2px solid #2aa198;
+    background-color: #eee8d5;
+}
+
+MetricCard QLabel {
+    color: #073642;
+}
+
+MetricCard QLabel#metricValue {
+    color: #b58900;
+    font-weight: bold;
+}
+
+/* Scrollbars */
+QScrollBar:vertical {
+    background: #eee8d5;
+    width: 12px;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:vertical {
+    background: #268bd2;
+    border-radius: 6px;
+    min-height: 20px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #2aa198;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    background: none;
+    height: 0px;
+}

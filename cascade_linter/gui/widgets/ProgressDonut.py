@@ -1,349 +1,322 @@
 # cascade_linter/gui/widgets/ProgressDonut.py
-"""
-ProgressDonut Widget for Cascade Linter GUI
-
-A circular progress indicator with custom painting for linter stage progress.
-Follows Nielsen's heuristics for clear system status visibility.
-
-Usage:
-    from cascade_linter.gui.widgets.ProgressDonut import ProgressDonut
-    
-    donut = ProgressDonut("Ruff")
-    donut.set_progress(75)  # 75% complete
-    donut.set_status("running")  # running, completed, error, pending
-"""
 
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
-from PySide6.QtCore import Qt, QTimer, QPropertyAnimation, QEasingCurve, Property
-from PySide6.QtGui import QPainter, QPen, QBrush, QColor, QFont, QFontMetrics
+from PySide6.QtCore import Qt, QPropertyAnimation, QEasingCurve, Property, QTimer
+from PySide6.QtGui import QPainter, QColor, QPen, QFont, QBrush
 import math
-from typing import Optional
 
 
 class ProgressDonut(QWidget):
     """
-    A circular progress widget for displaying linter stage progress.
-    
+    A circular progress donut widget for showing linter stage progress.
+
     Features:
-    - Animated progress changes
-    - Color-coded status (pending, running, completed, error)
-    - Clean typography with stage name
-    - Responsive sizing
-    - Smooth animations
+    - Circular progress indicator with smooth animations
+    - Custom colors and styling
+    - Stage label centered in the donut
+    - Smooth progress transitions with easing curves
+    - Professional appearance matching the dark theme
+    - Follows Nielsen's heuristics for clear progress indication
     """
-    
-    def __init__(self, stage_name: str, parent: Optional[QWidget] = None):
+
+    def __init__(self, title="Stage", parent=None):
         super().__init__(parent)
-        
-        self.stage_name = stage_name
-        self._progress = 0  # 0-100
-        self._animated_progress = 0  # For smooth animation
-        self.status = "pending"  # pending, running, completed, error
-        self.show_percentage = True
-        
-        self._init_ui()
-        self._setup_animation()
-    
-    def _init_ui(self):
-        """Initialize the user interface."""
-        self.setFixedSize(100, 120)  # Slightly taller to accommodate label
-        self.setObjectName("ProgressDonut")
-        
-        # Layout for stage name label
+        self.setFixedSize(80, 80)
+
+        # Data
+        self._title = title
+        self._progress = 0
+        self._animated_progress = 0.0
+
+        # Colors (matching dark theme)
+        self._background_color = QColor("#555753")
+        self._progress_color = QColor("#729fcf")  # Blue accent
+        self._text_color = QColor("#eeeeec")
+        self._border_color = QColor("#888a85")
+
+        # Animation
+        self._animation = QPropertyAnimation(self, b"animatedProgress")
+        self._animation.setDuration(500)  # Slightly longer for smooth feel
+        self._animation.setEasingCurve(QEasingCurve.Type.OutCubic)
+
+        # Setup UI
+        self.init_ui()
+        self.apply_styling()
+
+    def init_ui(self):
+        """Initialize the user interface"""
+        # We'll draw everything in paintEvent, so just set up the layout
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(2)
-        
-        # Add stretch to push label to bottom
-        layout.addStretch()
-        
-        # Stage name label
-        self.stage_label = QLabel(self.stage_name)
-        self.stage_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.stage_label.setObjectName("stageLabel")
-        self.stage_label.setStyleSheet("""
-            QLabel#stageLabel {
-                color: #E0E0E0;
-                font-size: 10px;
-                font-weight: normal;
+        layout.setContentsMargins(4, 4, 4, 4)
+
+        # Optional: Add a tooltip
+        self.setToolTip(f"{self._title} linter progress")
+
+    def apply_styling(self):
+        """Apply styling for hover effects"""
+        self.setStyleSheet(
+            """
+            ProgressDonut {
                 background: transparent;
             }
-        """)
-        layout.addWidget(self.stage_label)
-    
-    def _setup_animation(self):
-        """Set up smooth progress animation."""
-        self.animation = QPropertyAnimation(self, b"animatedProgress")
-        self.animation.setDuration(300)  # 300ms animation
-        self.animation.setEasingCurve(QEasingCurve.Type.OutCubic)
-    
-    def get_animatedProgress(self):
-        """Get animated progress value."""
-        return self._animated_progress
-    
-    def set_animatedProgress(self, value):
-        """Set animated progress value and trigger repaint."""
-        self._animated_progress = value
-        self.update()
-    
-    # Property for animation
-    animatedProgress = Property(float, get_animatedProgress, set_animatedProgress)
-    
-    def set_progress(self, progress: int):
+            ProgressDonut:hover {
+                background: rgba(114, 159, 207, 0.1);
+                border-radius: 40px;
+            }
         """
-        Set progress value with smooth animation.
-        
-        Args:
-            progress: Progress value (0-100)
-        """
+        )
+
+    def set_progress(self, progress):
+        """Set the progress value with smooth animation (0-100)"""
         progress = max(0, min(100, progress))  # Clamp to 0-100
-        
-        if progress != self._progress:
-            self._progress = progress
-            
-            # Animate to new progress value
-            self.animation.setStartValue(self._animated_progress)
-            self.animation.setEndValue(progress)
-            self.animation.start()
-            
-            # Update tooltip
-            self.setToolTip(f"{self.stage_name}: {progress}%")
-    
-    def set_status(self, status: str):
-        """
-        Set the status which affects the visual styling.
-        
-        Args:
-            status: Status string - 'pending', 'running', 'completed', 'error'
-        """
-        self.status = status
-        self.update()  # Trigger repaint with new colors
-        
-        # Update tooltip based on status
-        status_text = {
-            "pending": "Waiting to start",
-            "running": f"Running... {self._progress}%",
-            "completed": "Completed successfully",
-            "error": "Error occurred"
-        }.get(status, status)
-        
-        self.setToolTip(f"{self.stage_name}: {status_text}")
-    
-    def get_status_color(self):
-        """Get the color for current status."""
-        status_colors = {
-            "pending": QColor("#555753"),      # Gray
-            "running": QColor("#357ABD"),      # Blue
-            "completed": QColor("#50FA7B"),    # Green
-            "error": QColor("#FF5555")         # Red
-        }
-        return status_colors.get(self.status, QColor("#555753"))
-    
-    def get_background_color(self):
-        """Get the background track color."""
-        if self.status == "error":
-            return QColor("#331111")  # Dark red tint
-        elif self.status == "completed":
-            return QColor("#113311")  # Dark green tint
-        else:
-            return QColor("#2e3436")  # Default dark gray
-    
+
+        if progress == self._progress:
+            return
+
+        old_progress = self._progress
+        self._progress = progress
+
+        # Animate progress change
+        self._animation.setStartValue(float(old_progress))
+        self._animation.setEndValue(float(progress))
+        self._animation.start()
+
+    def get_progress(self):
+        """Get the current progress value"""
+        return self._progress
+
+    def set_title(self, title):
+        """Set the donut title"""
+        self._title = title
+        self.setToolTip(f"{self._title} linter progress")
+        self.update()
+
+    def get_title(self):
+        """Get the donut title"""
+        return self._title
+
+    def set_colors(self, background=None, progress=None, text=None, border=None):
+        """Set custom colors for the donut"""
+        if background:
+            self._background_color = QColor(background)
+        if progress:
+            self._progress_color = QColor(progress)
+        if text:
+            self._text_color = QColor(text)
+        if border:
+            self._border_color = QColor(border)
+        self.update()
+
+    # Property for animation
+    @Property(float)
+    def animatedProgress(self):
+        return self._animated_progress
+
+    @animatedProgress.setter
+    def animatedProgress(self, value):
+        self._animated_progress = value
+        self.update()  # Trigger repaint
+
     def paintEvent(self, event):
-        """Custom paint event to draw the circular progress."""
+        """Custom paint event to draw the donut"""
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        
-        # Get colors
-        fg_color = self.get_status_color()
-        bg_color = self.get_background_color()
-        
-        # Calculate dimensions
-        size = min(self.width(), self.height() - 30)  # Leave space for label
-        x = (self.width() - size) // 2
-        y = 5  # Small top margin
-        
-        # Pen settings
-        pen_width = 8
-        radius = (size - pen_width) // 2
-        center_x = x + size // 2
-        center_y = y + size // 2
-        
-        # Draw background circle (track)
-        painter.setPen(QPen(bg_color, pen_width, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap))
-        painter.setBrush(Qt.BrushStyle.NoBrush)
-        painter.drawEllipse(center_x - radius, center_y - radius, radius * 2, radius * 2)
-        
+
+        # Get the square area for the donut
+        rect = self.rect()
+        size = min(rect.width(), rect.height()) - 8  # Leave margin
+        x = (rect.width() - size) // 2
+        y = (rect.height() - size) // 2
+        donut_rect = rect.adjusted(x, y, -x, -y)
+
+        # Draw background circle
+        painter.setPen(QPen(self._border_color, 2))
+        painter.setBrush(QBrush(self._background_color))
+        painter.drawEllipse(donut_rect)
+
         # Draw progress arc
         if self._animated_progress > 0:
-            painter.setPen(QPen(fg_color, pen_width, Qt.PenStyle.SolidLine, Qt.PenCapStyle.RoundCap))
-            
-            # Calculate arc span (progress as angle)
-            start_angle = -90 * 16  # Start at top (12 o'clock), Qt uses 1/16th degree
-            span_angle = int((self._animated_progress / 100) * 360 * 16)
-            
-            painter.drawArc(center_x - radius, center_y - radius, radius * 2, radius * 2, 
-                          start_angle, span_angle)
-        
-        # Draw center text (percentage or status icon)
-        if self.show_percentage and self.status in ["running", "completed"]:
-            painter.setPen(QPen(QColor("#FFFFFF"), 1))
-            
-            # Draw percentage text
-            if self._progress < 100:
-                text = f"{int(self._animated_progress)}%"
-                font = QFont()
-                font.setPointSize(12)
-                font.setBold(True)
-            else:
-                text = "✓"  # Checkmark for completed
-                font = QFont()
-                font.setPointSize(20)
-                font.setBold(True)
-            
-            painter.setFont(font)
-            
-            # Center the text
-            fm = QFontMetrics(font)
-            text_width = fm.horizontalAdvance(text)
-            text_height = fm.height()
-            
-            text_x = center_x - text_width // 2
-            text_y = center_y + text_height // 4  # Slight vertical adjustment
-            
-            painter.drawText(text_x, text_y, text)
-        
-        elif self.status == "error":
-            # Draw error symbol
-            painter.setPen(QPen(QColor("#FF5555"), 3))
-            painter.setFont(QFont("Arial", 16, QFont.Weight.Bold))
-            painter.drawText(center_x - 8, center_y + 6, "✗")
-        
-        elif self.status == "pending":
-            # Draw pending symbol (clock or dash)
-            painter.setPen(QPen(QColor("#888888"), 2))
-            painter.setFont(QFont("Arial", 14))
-            painter.drawText(center_x - 6, center_y + 5, "—")
-        
-        super().paintEvent(event)
-    
-    def reset(self):
-        """Reset progress to 0 and status to pending."""
-        self.set_progress(0)
-        self.set_status("pending")
-    
-    def complete(self):
-        """Mark as completed (100% progress)."""
-        self.set_progress(100)
-        self.set_status("completed")
-    
-    def error(self):
-        """Mark as error state."""
-        self.set_status("error")
-    
-    def start(self):
-        """Mark as started/running."""
-        self.set_status("running")
+            # Calculate the arc span (360 degrees = full circle)
+            span_angle = int(
+                (self._animated_progress / 100.0) * 360 * 16
+            )  # Qt uses 16ths of degrees
 
+            # Create progress color with slight transparency for better appearance
+            progress_color = QColor(self._progress_color)
+            progress_color.setAlpha(220)
+
+            # Draw the progress arc
+            painter.setPen(QPen(progress_color, 3))
+            painter.setBrush(QBrush(progress_color))
+
+            # Start from top (-90 degrees) and go clockwise
+            start_angle = -90 * 16  # Top of circle
+            painter.drawPie(donut_rect, start_angle, span_angle)
+
+        # Draw inner circle to create donut effect
+        inner_margin = 15
+        inner_rect = donut_rect.adjusted(
+            inner_margin, inner_margin, -inner_margin, -inner_margin
+        )
+        painter.setPen(QPen(self._background_color, 1))
+        painter.setBrush(QBrush(QColor("#2e3436")))  # Match main window background
+        painter.drawEllipse(inner_rect)
+
+        # Draw title text in center
+        painter.setPen(QPen(self._text_color))
+        font = QFont("Segoe UI", 7, QFont.Weight.Bold)  # Slightly larger font
+        painter.setFont(font)
+
+        # Calculate text position - move title up slightly to make room for percentage
+        title_rect = inner_rect.adjusted(0, -6, 0, -6)  # Move up
+        painter.drawText(title_rect, Qt.AlignmentFlag.AlignCenter, self._title)
+
+        # Draw percentage text below title with better visibility
+        # Always show percentage, even when 0
+        percentage_text = f"{int(self._animated_progress)}%"
+
+        # Use larger, bold font for percentage
+        font_percent = QFont("Segoe UI", 8, QFont.Weight.Bold)
+        painter.setFont(font_percent)
+
+        # Use progress color when active, dimmed text color when at 0
+        if self._animated_progress > 0:
+            bright_color = QColor(self._progress_color)
+            bright_color.setAlpha(255)  # Full opacity
+            painter.setPen(QPen(bright_color))
+        else:
+            # Use dimmed text color for 0%
+            dim_color = QColor(self._text_color)
+            dim_color.setAlpha(150)  # Slightly dimmed
+            painter.setPen(QPen(dim_color))
+
+        # Position percentage below title
+        percent_rect = inner_rect.adjusted(0, 6, 0, 6)  # Move down
+        painter.drawText(percent_rect, Qt.AlignmentFlag.AlignCenter, percentage_text)
+
+    def sizeHint(self):
+        """Provide size hint for layout managers"""
+        from PySide6.QtCore import QSize
+
+        return QSize(80, 80)
+
+    def minimumSizeHint(self):
+        """Provide minimum size hint"""
+        from PySide6.QtCore import QSize
+
+        return QSize(60, 60)
+
+    def enterEvent(self, event):
+        """Handle mouse enter for hover effects"""
+        super().enterEvent(event)
+        self.update()  # Trigger repaint for hover effect
+
+    def leaveEvent(self, event):
+        """Handle mouse leave for hover effects"""
+        super().leaveEvent(event)
+        self.update()  # Trigger repaint to remove hover
+
+    def reset(self):
+        """Reset progress to 0"""
+        self.set_progress(0)
+
+    def complete(self):
+        """Set progress to 100%"""
+        self.set_progress(100)
+
+
+# --- DEMO/TEST CODE ---
 
 if __name__ == "__main__":
-    # Simple test of ProgressDonut
     import sys
-    from PySide6.QtWidgets import QApplication, QHBoxLayout, QWidget, QPushButton, QVBoxLayout
-    
+    from PySide6.QtWidgets import (
+        QApplication,
+        QHBoxLayout,
+        QVBoxLayout,
+        QWidget,
+        QPushButton,
+    )
+    from PySide6.QtCore import QTimer
+
     app = QApplication(sys.argv)
-    
-    # Test window
+
+    # Create test window
     window = QWidget()
-    window.setWindowTitle("ProgressDonut Test")
-    window.resize(600, 200)
-    
-    main_layout = QVBoxLayout(window)
-    
-    # Donuts layout
-    donuts_layout = QHBoxLayout()
-    
-    # Create sample donuts
-    donut1 = ProgressDonut("Ruff")
-    donut1.set_progress(100)
-    donut1.set_status("completed")
-    
-    donut2 = ProgressDonut("Flake8")
-    donut2.set_progress(75)
-    donut2.set_status("running")
-    
-    donut3 = ProgressDonut("Pylint")
-    donut3.set_progress(30)
-    donut3.set_status("error")
-    
-    donut4 = ProgressDonut("Bandit")
-    donut4.set_progress(0)
-    donut4.set_status("pending")
-    
-    donut5 = ProgressDonut("MyPy")
-    donut5.set_progress(0)
-    donut5.set_status("pending")
-    
-    donuts_layout.addWidget(donut1)
-    donuts_layout.addWidget(donut2)
-    donuts_layout.addWidget(donut3)
-    donuts_layout.addWidget(donut4)
-    donuts_layout.addWidget(donut5)
-    donuts_layout.addStretch()
-    
-    main_layout.addLayout(donuts_layout)
-    
-    # Test buttons
-    buttons_layout = QHBoxLayout()
-    
-    def test_progress():
-        donut2.set_progress(85)
-        donut3.set_progress(50)
-        donut4.set_progress(25)
-        donut4.set_status("running")
-    
-    def test_complete():
-        donut2.complete()
-        donut3.complete()
-        donut4.complete()
-        donut5.complete()
-    
-    def test_reset():
-        for donut in [donut1, donut2, donut3, donut4, donut5]:
-            donut.reset()
-    
-    btn_progress = QPushButton("Update Progress")
-    btn_progress.clicked.connect(test_progress)
-    
-    btn_complete = QPushButton("Complete All")
-    btn_complete.clicked.connect(test_complete)
-    
-    btn_reset = QPushButton("Reset All")
-    btn_reset.clicked.connect(test_reset)
-    
-    buttons_layout.addWidget(btn_progress)
-    buttons_layout.addWidget(btn_complete)
-    buttons_layout.addWidget(btn_reset)
-    buttons_layout.addStretch()
-    
-    main_layout.addLayout(buttons_layout)
-    
-    # Apply dark theme for testing
-    app.setStyleSheet("""
+    window.setWindowTitle("ProgressDonut Demo")
+    window.resize(500, 200)
+    window.setStyleSheet(
+        """
         QWidget {
-            background-color: #121212;
-            color: #E0E0E0;
+            background-color: #2e3436;
+            color: #eeeeec;
         }
-        QPushButton {
-            background-color: #357ABD;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 4px;
-        }
-        QPushButton:hover {
-            background-color: #4A90E2;
-        }
-    """)
-    
+    """
+    )
+
+    main_layout = QVBoxLayout(window)
+    main_layout.setContentsMargins(20, 20, 20, 20)
+
+    # Create test donuts
+    donut_layout = QHBoxLayout()
+    donut_layout.setSpacing(20)
+
+    donut1 = ProgressDonut("Ruff")
+    donut2 = ProgressDonut("Flake8")
+    donut3 = ProgressDonut("Pylint")
+    donut4 = ProgressDonut("Bandit")
+    donut5 = ProgressDonut("MyPy")
+
+    donuts = [donut1, donut2, donut3, donut4, donut5]
+
+    for donut in donuts:
+        donut_layout.addWidget(donut)
+
+    main_layout.addLayout(donut_layout)
+
+    # Create control buttons
+    button_layout = QHBoxLayout()
+
+    def simulate_progress():
+        """Simulate progressive linting"""
+        import random
+
+        for i, donut in enumerate(donuts):
+            # Stagger the progress updates
+            def set_progress(d=donut, delay=i * 500):
+                QTimer.singleShot(
+                    delay, lambda d=d: d.set_progress(random.randint(0, 100))
+                )
+
+            set_progress()
+
+    def reset_progress():
+        """Reset all donuts to 0"""
+        for donut in donuts:
+            donut.set_progress(0)
+
+    def complete_all():
+        """Set all donuts to 100%"""
+        for donut in donuts:
+            donut.set_progress(100)
+
+    simulate_btn = QPushButton("Simulate Progress")
+    simulate_btn.clicked.connect(simulate_progress)
+    button_layout.addWidget(simulate_btn)
+
+    reset_btn = QPushButton("Reset All")
+    reset_btn.clicked.connect(reset_progress)
+    button_layout.addWidget(reset_btn)
+
+    complete_btn = QPushButton("Complete All")
+    complete_btn.clicked.connect(complete_all)
+    button_layout.addWidget(complete_btn)
+
+    main_layout.addLayout(button_layout)
+
+    # Auto-demo timer
+    demo_timer = QTimer()
+    demo_timer.timeout.connect(simulate_progress)
+    demo_timer.start(3000)  # Auto-simulate every 3 seconds
+
     window.show()
     sys.exit(app.exec())

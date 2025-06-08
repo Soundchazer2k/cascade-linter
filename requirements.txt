@@ -19,6 +19,7 @@ autoflake>=2.0.0
 # Optional Enhancements
 qtawesome>=1.2.0  # Icons
 qt-material>=2.14  # Material Design themes
+QT-PyQt-PySide-Custom-Widgets>=1.0.0  # Advanced custom widgets
 pytz>=2023.3      # Timezone support
 
 # Tier 2 CLI Features

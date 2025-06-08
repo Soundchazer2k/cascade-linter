@@ -206,7 +206,8 @@ class SettingsDialog(QDialog):
         shortcuts_text = QTextEdit()
         shortcuts_text.setMaximumHeight(120)
         shortcuts_text.setReadOnly(True)
-        shortcuts_text.setHtml("""
+        shortcuts_text.setHtml(
+            """
         <b>Available Shortcuts:</b><br>
         • <b>F5</b> - Start Linting<br>
         • <b>Escape</b> - Stop Linting<br>
@@ -216,7 +217,8 @@ class SettingsDialog(QDialog):
         • <b>F1</b> - Switch to Issues Tab<br>
         • <b>F2</b> - Switch to Dashboard Tab<br>
         • <b>F3</b> - Switch to Log Tab
-        """)
+        """
+        )
         shortcuts_layout.addWidget(shortcuts_text)
 
         layout.addWidget(shortcuts_group)

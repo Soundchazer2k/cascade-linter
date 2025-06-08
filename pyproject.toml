@@ -82,6 +82,7 @@ extend-exclude = '''
   | \.venv
   | build
   | dist
+  | backup
 )/
 '''
 
@@ -127,4 +128,29 @@ markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
     "integration: marks tests as integration tests",
     "gui: marks tests as GUI tests (require PySide6)",
+]
+
+# Linter exclusions for backup and development artifacts
+[tool.ruff]
+extend-exclude = [
+    "backup/",
+    "*.bak",
+    "*_backup*",
+    "*.broken",
+]
+
+[tool.flake8]
+extend-exclude = [
+    "backup/",
+    "*.bak", 
+    "*_backup*",
+    "*.broken",
+]
+
+[tool.pylint.MASTER]
+ignore-paths = [
+    "backup/.*",
+    ".*\\.bak",
+    ".*_backup.*",
+    ".*\\.broken",
 ]

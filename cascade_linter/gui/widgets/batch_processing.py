@@ -97,19 +97,24 @@ class BatchJobWorker(QThread):
         try:
             # Create linter runner with refactored core
             runner = CodeQualityRunner(
-                debug=options.get("debug", False), 
-                simple_output=False
+                debug=options.get("debug", False), simple_output=False
             )
 
             # Use the new unified linting session approach with all 5 stages including MyPy
-            stages = [LinterStage.RUFF, LinterStage.FLAKE8, LinterStage.PYLINT, LinterStage.BANDIT, LinterStage.MYPY]
-            
+            stages = [
+                LinterStage.RUFF,
+                LinterStage.FLAKE8,
+                LinterStage.PYLINT,
+                LinterStage.BANDIT,
+                LinterStage.MYPY,
+            ]
+
             # Run complete linting session
             session = runner.run_linting_session(
                 path=directory,
                 stages=stages,
                 check_only=options.get("check_only", False),
-                unsafe_fixes=options.get("unsafe_fixes", False)
+                unsafe_fixes=options.get("unsafe_fixes", False),
             )
 
             # Update progress

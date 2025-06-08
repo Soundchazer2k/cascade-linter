@@ -23,9 +23,15 @@ __pycache__/
 *_analysis*
 *_report*
 
-# Development Reports
+# Development Reports & Setup Documentation
 *_REPORT.md
+*_SUMMARY.md
+*_COMPLETE.md
+*_PLAN.md
+*_GUIDE.md
+*_INTEGRATION*.md
 CLEANUP_PLAN.md
+GITHUB_SETUP.md
 
 # Test Files (until proper test suite established)
 test_*.py
@@ -70,4 +76,7 @@ config.local.*
 *_push*.bat 
 *_push*.sh 
 setup_*.bat 
-setup_*.sh 
+setup_*.sh
+
+# Development Instructions & Memories (internal use only)
+coding_instructions/ 

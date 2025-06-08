@@ -85,7 +85,9 @@ class IssueTreeWidget(QTreeWidget):
             # Add issue items
             for issue in file_issues:
                 issue_item = QTreeWidgetItem(file_item)
-                issue_item.setText(0, f"{issue.severity.icon} {issue.code}: {issue.message}")
+                issue_item.setText(
+                    0, f"{issue.severity.icon} {issue.code}: {issue.message}"
+                )
                 issue_item.setText(1, f"Line {issue.line}, Column {issue.column}")
                 issue_item.setText(2, issue.linter)
 
@@ -361,12 +363,13 @@ class IssueBrowserWidget(QWidget):
                 "Errors": IssueSeverity.ERROR,
                 "Warnings": IssueSeverity.WARNING,
                 "Info": IssueSeverity.INFO,
-                "Style": IssueSeverity.INFO  # Map style to info
+                "Style": IssueSeverity.INFO,  # Map style to info
             }
             if severity_filter in severity_map:
                 target_severity = severity_map[severity_filter]
                 filtered_issues = [
-                    issue for issue in filtered_issues
+                    issue
+                    for issue in filtered_issues
                     if issue.severity == target_severity
                 ]
 
@@ -375,7 +378,8 @@ class IssueBrowserWidget(QWidget):
         if linter_filter != "All Linters":
             linter_name = linter_filter.lower()
             filtered_issues = [
-                issue for issue in filtered_issues
+                issue
+                for issue in filtered_issues
                 if issue.linter.lower() == linter_name
             ]
 
@@ -383,7 +387,8 @@ class IssueBrowserWidget(QWidget):
         search_text = self.search_input.text().lower()
         if search_text:
             filtered_issues = [
-                issue for issue in filtered_issues
+                issue
+                for issue in filtered_issues
                 if (
                     search_text in issue.message.lower()
                     or search_text in issue.code.lower()

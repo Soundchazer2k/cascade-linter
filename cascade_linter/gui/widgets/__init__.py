@@ -1,22 +1,18 @@
 # cascade_linter/gui/widgets/__init__.py
+
 """
-GUI Widgets Package
+Custom PySide6 Widgets for Cascade Linter GUI
 
-Custom widgets for the Cascade Linter GUI following modern design principles
-and Nielsen's usability heuristics.
+This package contains custom widgets designed specifically for the Cascade Linter interface:
 
-Available Widgets:
-- MetricCard: Display key metrics with icon, title, and value
-- ProgressDonut: Circular progress indicator for linter stages
-- LogViewer: Enhanced log viewer with HTML support (coming next)
+- MetricCard: Professional metric display cards with animations
+- ProgressDonut: Circular progress indicators for linter stages
+- LogViewer: Advanced HTML log viewer with filtering capabilities
+- LintStageBar: Horizontal progress bar for linter pipeline (future)
+
+All widgets follow modern flat design principles and Nielsen's usability heuristics.
+They are designed to be reusable, accessible, and visually consistent.
 """
 
-from .MetricCard import MetricCard
-from .ProgressDonut import ProgressDonut
-from .LogViewer import LogViewer
-
-__all__ = [
-    "MetricCard",
-    "ProgressDonut",
-    "LogViewer",
-]
+# Don't auto-import widgets to avoid import errors during development
+__all__ = []

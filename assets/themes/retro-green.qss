@@ -1,0 +1,296 @@
+/* Retro Green (Game Boy) Theme for Cascade Linter GUI */
+
+QWidget {
+    background-color: #05130f;
+    color: #daffd4;
+    font-family: "Segoe UI", "Ubuntu", sans-serif;
+    font-size: 10pt;
+}
+
+QMainWindow {
+    background-color: #05130f;
+}
+
+/* Buttons */
+QPushButton {
+    background-color: #17815d;
+    color: #05130f;
+    border: 1px solid #0a2c24;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-weight: bold;
+}
+
+QPushButton:hover {
+    background-color: #1f5e4a;
+}
+
+QPushButton:pressed {
+    background-color: #0a2c24;
+}
+
+/* IMPROVED: Much more visible disabled state with subtle overlay effect */
+QPushButton:disabled {
+    background-color: #0a2c24;
+    color: #93e7ae;
+    border: 1px solid #17815d;
+    opacity: 0.6;
+}
+
+/* Dialog styling */
+QDialog {
+    background-color: #05130f;
+    color: #daffd4;
+}
+
+/* Tab widget */
+QTabWidget {
+    background-color: #05130f;
+}
+
+QTabWidget::pane {
+    border: 1px solid #17815d;
+    background-color: #05130f;
+}
+
+QTabWidget::tab-bar {
+    alignment: left;
+}
+
+QTabBar::tab {
+    background-color: #0a2c24;
+    color: #daffd4;
+    padding: 8px 16px;
+    margin-right: 2px;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+QTabBar::tab:selected {
+    background-color: #93e7ae;
+    color: #05130f;
+}
+
+QTabBar::tab:hover {
+    background-color: #1f5e4a;
+    color: #93e7ae;
+}
+
+/* Group boxes - REFINED: Thinner, more subtle borders */
+QGroupBox {
+    color: #93e7ae;
+    font-weight: bold;
+    border: 1px solid #1f5e4a;
+    border-radius: 4px;
+    margin-top: 8px;
+    padding-top: 8px;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 8px;
+    padding: 0 8px;
+    background-color: #05130f;
+}
+
+/* Form controls */
+QCheckBox {
+    spacing: 6px;
+    color: #daffd4;
+}
+
+QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+    border: 2px solid #17815d;
+    border-radius: 3px;
+    background-color: #0a2c24;
+}
+
+QCheckBox::indicator:checked {
+    background-color: #93e7ae;
+    border-color: #daffd4;
+}
+
+/* ENHANCED: Interactive hover effects for filter checkboxes */
+QCheckBox::indicator:hover {
+    border-color: #93e7ae;
+    background-color: #1f5e4a;
+}
+
+QSpinBox, QComboBox, QLineEdit {
+    background-color: #0a2c24;
+    color: #daffd4;
+    border: 1px solid #17815d;
+    border-radius: 4px;
+    padding: 4px 8px;
+    selection-background-color: #1f5e4a;
+}
+
+QSpinBox:focus, QComboBox:focus, QLineEdit:focus {
+    border-color: #93e7ae;
+}
+
+QComboBox::drop-down {
+    border: none;
+    background-color: #17815d;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+    width: 20px;
+}
+
+QComboBox::down-arrow {
+    image: url(assets/arrow-down-green.svg);
+    width: 12px;
+    height: 8px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #05130f;
+    color: #daffd4;
+    border: 1px solid #17815d;
+    selection-background-color: #93e7ae;
+    selection-color: #05130f;
+    outline: none;
+}
+
+/* SpinBox controls */
+QSpinBox::up-button, QSpinBox::down-button {
+    background-color: #17815d;
+    border: none;
+    width: 16px;
+    border-radius: 2px;
+}
+
+QSpinBox::up-button:hover, QSpinBox::down-button:hover {
+    background-color: #93e7ae;
+}
+
+QSpinBox::up-arrow {
+    image: url(assets/arrow-up-green.svg);
+    width: 10px;
+    height: 6px;
+}
+
+QSpinBox::down-arrow {
+    image: url(assets/arrow-down-green.svg);
+    width: 10px;
+    height: 6px;
+}
+
+/* Labels - IMPROVED: Better contrast for activity log readability */
+QLabel {
+    color: #daffd4;
+}
+
+QGroupBox QLabel {
+    color: #93e7ae;
+}
+
+/* ENHANCED: Better contrast for activity log text */
+QTextEdit, QPlainTextEdit {
+    background-color: #0a2c24;
+    color: #daffd4;
+    border: 1px solid #17815d;
+    border-radius: 4px;
+    selection-background-color: #1f5e4a;
+    font-family: 'Consolas', 'Monaco', monospace;
+}
+
+/* Improved readability for log entries */
+QTextEdit[logLevel="info"] {
+    color: #daffd4;
+}
+
+QTextEdit[logLevel="warning"] {
+    color: #93e7ae;
+}
+
+QTextEdit[logLevel="error"] {
+    color: #daffd4;
+    font-weight: bold;
+}
+
+QLabel#shortcuts {
+    color: #daffd4;
+    background-color: rgba(10, 44, 36, 0.8);
+    padding: 12px;
+    border: 1px solid #17815d;
+    border-radius: 6px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    font-size: 9pt;
+}
+
+/* Scrollbars */
+QScrollBar:vertical {
+    background: #0a2c24;
+    width: 12px;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:vertical {
+    background: #17815d;
+    border-radius: 6px;
+    min-height: 20px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #1f5e4a;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    background: none;
+    height: 0px;
+}
+
+/* ENHANCED: Progress bar styling for better visibility */
+QProgressBar {
+    background-color: #0a2c24;
+    border: 1px solid #17815d;
+    border-radius: 4px;
+    text-align: center;
+    color: #daffd4;
+    font-weight: bold;
+}
+
+QProgressBar::chunk {
+    background-color: #93e7ae;
+    border-radius: 3px;
+}
+
+/* ENHANCED: List widget styling for analytics tables */
+QListWidget, QTableWidget {
+    background-color: #0a2c24;
+    color: #daffd4;
+    border: 1px solid #17815d;
+    border-radius: 4px;
+    alternate-background-color: #1f5e4a;
+    gridline-color: #17815d;
+}
+
+QListWidget::item, QTableWidget::item {
+    padding: 4px;
+    border: none;
+}
+
+QListWidget::item:selected, QTableWidget::item:selected {
+    background-color: #93e7ae;
+    color: #05130f;
+}
+
+QListWidget::item:hover, QTableWidget::item:hover {
+    background-color: #1f5e4a;
+}
+
+/* ENHANCED: Header styling for tables */
+QHeaderView::section {
+    background-color: #17815d;
+    color: #05130f;
+    padding: 6px;
+    border: 1px solid #0a2c24;
+    font-weight: bold;
+}
+
+QHeaderView::section:hover {
+    background-color: #93e7ae;
+}

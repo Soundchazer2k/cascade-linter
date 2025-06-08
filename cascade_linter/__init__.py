@@ -17,7 +17,7 @@ from .core import (
     IssueSeverity,
     LinterProgressCallback,
     StageResult,
-    run_cascade_lint
+    run_cascade_lint,
 )
 
 # Import CLI interface
@@ -31,31 +31,30 @@ except ImportError:
 __all__ = [
     # Core classes
     "CodeQualityRunner",
-    "LintingSession", 
+    "LintingSession",
     "IssueItem",
     "LinterStage",
     "IssueSeverity",
     "LinterProgressCallback",
     "StageResult",
-    
     # Main functions
     "run_cascade_lint",
     "cli_main",
-    
     # Metadata
     "__version__",
     "__author__",
-    "__description__"
+    "__description__",
 ]
+
 
 # Convenience function for backward compatibility
 def create_linter_session(target_path: str = ".") -> LintingSession:
     """
     Create a new linting session (convenience function)
-    
+
     Args:
         target_path: Path to lint (default: current directory)
-        
+
     Returns:
         LintingSession: New linting session
     """
@@ -65,7 +64,7 @@ def create_linter_session(target_path: str = ".") -> LintingSession:
 def create_quality_runner() -> CodeQualityRunner:
     """
     Create a new code quality runner (convenience function)
-    
+
     Returns:
         CodeQualityRunner: New runner instance
     """
@@ -82,12 +81,12 @@ PACKAGE_CONFIG = {
     "linters": ["ruff", "flake8", "pylint", "bandit"],
     "features": [
         "Cross-platform GUI",
-        "CLI interface", 
+        "CLI interface",
         "Real-time progress",
         "Rich terminal output",
         "Dark/Light themes",
         "Batch processing",
         "Issue filtering",
-        "Export capabilities"
-    ]
+        "Export capabilities",
+    ],
 }
