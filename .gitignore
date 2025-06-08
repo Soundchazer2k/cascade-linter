@@ -46,6 +46,7 @@ tests/
 build/
 dist/
 *.egg-info/
+node_modules/  # JS dependencies
 
 # IDE Files
 .vscode/
