@@ -1,13 +1,23 @@
 # Cascade Linter - Usage Guide
 
-[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](./VERSION.txt)
+[![Version](https://img.shields.io/badge/version-1.1.1-blue.svg)](./VERSION.txt)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](./LICENSE)
 
-Professional Python code quality toolkit with enhanced dependency analysis.
+Professional Python code quality toolkit with enhanced dependency analysis and modern GUI interface.
 
 ## 🚀 Quick Start
 
-### Basic Usage
+### GUI Interface (Recommended)
+
+```bash
+# Launch the professional GUI interface
+python enhanced_launcher.py --gui
+
+# Alternative: Command line argument
+python enhanced_launcher.py
+```
+
+### Command Line Interface
 
 ```bash
 # Lint current directory with all stages
@@ -46,14 +56,36 @@ python -m cascade_linter.cli_enhanced --dependency-analysis --export-csv analysi
 ```bash
 cd cascade-linter
 pip install -r requirements.txt
+pip install -r requirements-gui.txt  # For GUI interface
 ```
 
 ### Verify Installation
 ```bash
 python -m cascade_linter --help
+python enhanced_launcher.py --help  # GUI launcher
 ```
 
-## 🔧 Command Reference
+## 🖥️ GUI Interface Features
+
+The professional GUI interface provides:
+
+- **🎨 Material Design**: Modern dark theme with beautiful widgets
+- **📊 Real-time Progress**: Live progress tracking with animated donuts
+- **📈 Analytics Dashboard**: Comprehensive code quality metrics
+- **🔧 Auto Fix**: Safe automatic code fixes with preview
+- **📋 Activity Logs**: Structured, colorized logging output
+- **⚙️ Settings Management**: Configurable linter preferences
+- **🎯 Export Options**: Results export in multiple formats
+
+### GUI Quick Start
+
+1. **Launch**: `python enhanced_launcher.py --gui`
+2. **Add Directory**: Click "Add Directory" to select your Python project
+3. **Run Analysis**: Choose "Run Analysis" for comprehensive linting
+4. **View Results**: Check the Analytics tab for detailed metrics
+5. **Auto Fix**: Use "Auto Fix" tab for safe automatic corrections
+
+## �� Command Reference
 
 ### Basic Linting Commands
 
@@ -324,4 +356,18 @@ After running analysis:
 
 ---
 
-For more advanced usage and GUI interface, see the desktop application documentation (coming in v2.0.0).
+## 🖥️ GUI vs CLI Decision Guide
+
+**Use GUI when you want:**
+- Visual progress tracking and real-time feedback
+- Interactive analytics dashboard and metrics
+- Point-and-click project management
+- Export capabilities with visual previews
+
+**Use CLI when you want:**
+- Automation and scripting integration
+- CI/CD pipeline integration
+- Batch processing of multiple projects
+- Lightweight operation without GUI dependencies
+
+**For developers**: Both interfaces use the same core engine, so results are identical.

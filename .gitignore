@@ -28,10 +28,14 @@ __pycache__/
 *_SUMMARY.md
 *_COMPLETE.md
 *_PLAN.md
-*_GUIDE.md
 *_INTEGRATION*.md
 CLEANUP_PLAN.md
 GITHUB_SETUP.md
+
+# Development-specific guide files (not production docs)
+*_INTEGRATION_GUIDE.md
+*_IMPROVEMENT*_GUIDE.md
+*_DEVELOPMENT_GUIDE.md
 
 # Test Files (until proper test suite established)
 test_*.py
