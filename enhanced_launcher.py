@@ -122,7 +122,7 @@ def create_splash_screen(app: QApplication) -> Optional[QSplashScreen]:
             version_font.setPointSize(11)
             painter.setFont(version_font)
             painter.setPen(QColor("#A0A0A0"))
-            painter.drawText(180, 130, "Version 1.0.0 • PySide6")
+            painter.drawText(180, 130, "Version 1.1.1 • PySide6")
 
             # Add a cute tagline
             painter.setPen(QColor("#FFD54F"))  # Match mascot yellow
@@ -161,7 +161,7 @@ def create_splash_screen(app: QApplication) -> Optional[QSplashScreen]:
             version_font = painter.font()
             version_font.setPointSize(10)
             painter.setFont(version_font)
-            painter.drawText(20, 120, "Version 1.0.0")
+            painter.drawText(20, 120, "Version 1.1.1")
             painter.drawText(20, 140, "Loading...")
 
             painter.end()
@@ -334,7 +334,7 @@ def main() -> int:
 
         # Set application metadata
         app.setApplicationName("Cascade Linter")
-        app.setApplicationVersion("1.0.0")
+        app.setApplicationVersion("1.1.1")
         app.setOrganizationName("CascadeLinter")
         app.setOrganizationDomain("cascadelinter.dev")
 
